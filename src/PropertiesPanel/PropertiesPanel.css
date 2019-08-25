@@ -1,0 +1,8 @@
+.PropertiesPanel {
+    background-color: #323232;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 400px;
+    color: #FFF;
+}
