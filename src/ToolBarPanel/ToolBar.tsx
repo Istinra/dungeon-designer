@@ -8,6 +8,7 @@ export default class ToolBar extends React.Component {
         return <div className="ToolBar">
             <input type="button" value="Select" style={{display: "block"}}/>
             <input type="button" value="Room" style={{display: "block"}}/>
+            <input type="button" value="Door" style={{display: "block"}}/>
         </div>
     }
 }

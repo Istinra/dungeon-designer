@@ -6,11 +6,13 @@ export interface DesignerState {
 
 export enum ToolMode {
     SELECT,
-    ROOM
+    ROOM,
+    DOOR
 }
 
 export interface MapState {
     rooms: Room[];
+    doors: Door[];
 }
 
 export interface Point {
@@ -20,4 +22,10 @@ export interface Point {
 export interface Room {
     points: Point[];
     colour: string;
+}
+
+export interface Door {
+    start: Point;
+    finish: Point;
+    color: string;
 }
