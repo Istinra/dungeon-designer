@@ -3,7 +3,8 @@ import {CREATE_ROOM_ACTION, DesignerActionTypes} from "./actions";
 
 const initialState: DesignerState = {
     map: {
-        rooms: []
+        rooms: [],
+        doors: []
     },
     toolMode: ToolMode.ROOM
 };

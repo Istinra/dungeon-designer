@@ -1,0 +1,24 @@
+@import "style-variables";
+
+body {
+    margin: 0;
+    background-color: $backgroundColor;
+    color: $primaryColor;
+}
+
+button {
+    color: $primaryColor;
+    cursor: pointer;
+    background: $surfaceColor;
+    border: 1px solid;
+    border-radius: 3px;
+    margin: 4px;
+    padding: 5px 10px;
+}
+
+input {
+    color: $primaryColor;
+    background: $backgroundColor;
+    border: 1px solid;
+    border-radius: 3px;
+}

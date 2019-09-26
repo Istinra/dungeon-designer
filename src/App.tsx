@@ -1,6 +1,6 @@
 import React from 'react';
 import ToolBar from './ToolBarPanel/ToolBar'
-import './App.css';
+import './App.scss';
 import DungeonMap from "./Map/DungeonMap";
 import PropertiesPanel from "./PropertiesPanel/PropertiesPanel";
 

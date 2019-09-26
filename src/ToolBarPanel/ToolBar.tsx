@@ -1,14 +1,14 @@
 import * as React from "react";
-import "./ToolBar.css"
+import "./ToolBar.scss"
 
 
 export default class ToolBar extends React.Component {
 
     render() {
         return <div className="ToolBar">
-            <input type="button" value="Select" style={{display: "block"}}/>
-            <input type="button" value="Room" style={{display: "block"}}/>
-            <input type="button" value="Door" style={{display: "block"}}/>
+            <button type="button">Select</button>
+            <button type="button">Room</button>
+            <button type="button">Door</button>
         </div>
     }
 }

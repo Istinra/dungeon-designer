@@ -3,6 +3,7 @@ import {DesignerState, Point} from "../state";
 import {connect} from 'react-redux';
 import {Dispatch} from "redux";
 import {CREATE_ROOM_ACTION} from "../actions";
+import "./DungeonMap.css"
 
 interface DungeonMapStateProps {
     state: DesignerState
@@ -117,8 +118,7 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
     };
 
     render() {
-        console.log(this.props.state);
-        return <div style={{margin: "20px"}}>
+        return <div className="DungeonMap">
             <canvas ref={this.canvasRef}
                     width={this.widthPx + "px"} height={this.heightPx + "px"}
                     onMouseMove={this.onMouseMove} onClick={this.onMapClicked}/>
