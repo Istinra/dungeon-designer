@@ -1,5 +1,5 @@
 import {DesignerState, ToolMode} from "./state";
-import {CREATE_ROOM_ACTION, DesignerActionTypes} from "./actions";
+import {CHANGE_MODE_ACTION, CREATE_ROOM_ACTION, DesignerActionTypes} from "./actions";
 
 const initialState: DesignerState = {
     map: {
@@ -17,6 +17,11 @@ export function designerReducer(state: DesignerState = initialState, action: Des
                 map: {
                     ...state.map, rooms: [...state.map.rooms, action.payload]
                 }
+            };
+        case CHANGE_MODE_ACTION:
+            return {
+                ...state,
+                toolMode: action.payload
             };
     }
     return state;
