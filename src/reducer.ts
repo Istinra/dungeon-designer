@@ -1,12 +1,16 @@
-import {DesignerState, ToolMode} from "./state";
-import {CHANGE_MODE_ACTION, CREATE_ROOM_ACTION, DesignerActionTypes} from "./actions";
+import {DesignerState, ObjectType, ToolMode} from "./state";
+import {CHANGE_MODE_ACTION, CREATE_ROOM_ACTION, DesignerActionTypes, UPDATE_PROPERTIES} from "./actions";
 
 const initialState: DesignerState = {
     map: {
         rooms: [],
         doors: []
     },
-    toolMode: ToolMode.ROOM
+    toolMode: ToolMode.ROOM,
+    selected: {
+        type: ObjectType.MAP,
+        index: 0
+    }
 };
 
 export function designerReducer(state: DesignerState = initialState, action: DesignerActionTypes): DesignerState {
@@ -23,6 +27,15 @@ export function designerReducer(state: DesignerState = initialState, action: Des
                 ...state,
                 toolMode: action.payload
             };
+        case UPDATE_PROPERTIES: {
+            return {
+                ...state,
+                map: {
+                    ...state.map,
+                    //TODO replace array
+                }
+            }
+        }
     }
     return state;
 }
