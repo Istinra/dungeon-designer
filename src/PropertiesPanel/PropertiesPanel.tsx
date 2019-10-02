@@ -1,6 +1,6 @@
 import * as React from "react";
 import "./PropertiesPanel.scss"
-import {DesignerState, MapState, ObjectType, Room, SelectedState} from "../state";
+import {DesignerState, ObjectType, Room, ToolMode} from "../state";
 import {Dispatch} from "redux";
 import {connect} from 'react-redux';
 import {UPDATE_PROPERTIES} from "../actions";
@@ -20,7 +20,14 @@ class PropertiesPanel extends React.Component<PropertiesPanelProps & PropertiesP
         let selectedContent;
         switch (this.props.selectedType) {
             case ObjectType.ROOM:
-                selectedContent = <span>Room</span>;
+                selectedContent = [
+                    <label htmlFor="name">
+                        Name: <input id="name" type="text"/>
+                    </label>,
+                    <label htmlFor="color">
+                        Color: <input id="color" type="color"/>
+                    </label>
+                ];
                 break;
             case ObjectType.DOOR:
                 selectedContent = <span>Door</span>;
@@ -34,15 +41,29 @@ class PropertiesPanel extends React.Component<PropertiesPanelProps & PropertiesP
     }
 }
 
-function getSelectedItem(selected: SelectedState, map: MapState): Room {
-    return selected.type === ObjectType.ROOM ? map.rooms[selected.index] : null;
-}
 
 function mapStateToProps(state: DesignerState): PropertiesPanelProps {
-    return {
-        selected: getSelectedItem(state.selected, state.map),
-        selectedType: state.selected.type
+    switch (state.toolMode) {
+        case ToolMode.SELECT:
+            if (state.selected) {
+                switch (state.selected.type) {
+                    case ObjectType.ROOM:
+                        return {selected: state.map.rooms[state.selected.index], selectedType: ObjectType.ROOM};
+                    case ObjectType.DOOR:
+                        //TODO Fetch selected door
+                        return {selected: null, selectedType: ObjectType.DOOR};
+                }
+            }
+            break;
+        case ToolMode.ROOM:
+            return {selected: state.pendingObjects.room, selectedType: ObjectType.ROOM};
+        case ToolMode.DOOR:
+            //todo state.pendingObjects.door
+            return {selected: null, selectedType: ObjectType.DOOR};
+
     }
+    // TODO return map props
+    return {selected: null, selectedType: ObjectType.MAP};
 }
 
 function mapStateToDispatch(dispatch: Dispatch): PropertiesPanelDispatch {
@@ -53,12 +74,3 @@ function mapStateToDispatch(dispatch: Dispatch): PropertiesPanelDispatch {
 }
 
 export default connect(mapStateToProps, mapStateToDispatch)(PropertiesPanel);
-
-/*
-<label htmlFor="name">
-                Name: <input id="name" type="text"/>
-            </label>
-            <label htmlFor="color">
-                Colour: <input id="color" type="color"/>
-            </label>
- */

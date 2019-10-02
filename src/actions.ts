@@ -1,4 +1,4 @@
-import {Room, ToolMode} from "./state";
+import {Door, MapPropertiesState, Room, ToolMode} from "./state";
 
 export const CREATE_ROOM_ACTION = "CREATE_ROOM";
 export const CHANGE_MODE_ACTION = "CHANGE_MODE";
@@ -16,7 +16,7 @@ export interface ChangeModeAction {
 
 export interface UpdatePropertiesAction {
     type: typeof UPDATE_PROPERTIES;
-    payload: Room;
+    payload: Room | Door | MapPropertiesState;
 }
 
 export type DesignerActionTypes = CreateRoomAction | ChangeModeAction | UpdatePropertiesAction;

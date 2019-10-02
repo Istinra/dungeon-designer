@@ -73,8 +73,8 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
 
     private drawRooms() {
         for (let room of this.props.state.map.rooms) {
-            this.ctx.strokeStyle = room.colour;
-            this.ctx.fillStyle = room.colour;
+            this.ctx.strokeStyle = room.color;
+            this.ctx.fillStyle = room.color;
             for (let i = 0; i < room.points.length - 1; i++) {
                 this.drawLine(room.points[i], room.points[i + 1]);
             }
@@ -137,7 +137,7 @@ function mapStateToProps(state: DesignerState, ownProps): DungeonMapStateProps {
 function mapStateToDispatch(dispatch: Dispatch): DungeonMapDispatchProps {
     return {
         roomCreated: (points: Point[]) =>
-            dispatch({type: CREATE_ROOM_ACTION, payload: {points: points, colour: "blue"}})
+            dispatch({type: CREATE_ROOM_ACTION, payload: {points: points, color: "blue"}})
     }
 }
 
