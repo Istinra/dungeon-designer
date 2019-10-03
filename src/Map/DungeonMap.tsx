@@ -137,7 +137,7 @@ function mapStateToProps(state: DesignerState, ownProps): DungeonMapStateProps {
 function mapStateToDispatch(dispatch: Dispatch): DungeonMapDispatchProps {
     return {
         roomCreated: (points: Point[]) =>
-            dispatch({type: CREATE_ROOM_ACTION, payload: {points: points, color: "blue"}})
+            dispatch({type: CREATE_ROOM_ACTION, payload: points})
     }
 }
 

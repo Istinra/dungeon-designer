@@ -30,7 +30,7 @@ export function designerReducer(state: DesignerState = initialState, action: Des
             return {
                 ...state,
                 map: {
-                    ...state.map, rooms: [...state.map.rooms, action.payload]
+                    ...state.map, rooms: [...state.map.rooms, {...state.pendingObjects.room, points: action.payload}]
                 }
             };
         case CHANGE_MODE_ACTION:
