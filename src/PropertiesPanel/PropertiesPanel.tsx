@@ -20,14 +20,9 @@ class PropertiesPanel extends React.Component<PropertiesPanelProps & PropertiesP
         let selectedContent;
         switch (this.props.selectedType) {
             case ObjectType.ROOM:
-                selectedContent = [
-                    <label htmlFor="name">
-                        Name: <input id="name" type="text"/>
-                    </label>,
-                    <label htmlFor="color">
-                        Color: <input id="color" type="color"/>
-                    </label>
-                ];
+                selectedContent = <label htmlFor="color">
+                    Color: <input id="color" type="color" value={this.props.selected.color} onChange={this.onChange}/>
+                </label>;
                 break;
             case ObjectType.DOOR:
                 selectedContent = <span>Door</span>;
@@ -39,7 +34,12 @@ class PropertiesPanel extends React.Component<PropertiesPanelProps & PropertiesP
             {selectedContent}
         </div>
     }
+
+    private onChange = (event: React.FormEvent<HTMLInputElement>) => {
+        this.props.onUpdate({...this.props.selected, color: event.currentTarget.value});
+    }
 }
+
 
 
 function mapStateToProps(state: DesignerState): PropertiesPanelProps {

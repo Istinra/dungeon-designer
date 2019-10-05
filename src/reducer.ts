@@ -9,7 +9,7 @@ import {
 
 const initialState: DesignerState = {
     map: {
-        properties: {color: "#000"},
+        properties: {color: "#111111"},
         rooms: [],
         doors: []
     },
@@ -19,8 +19,8 @@ const initialState: DesignerState = {
         index: 0
     },
     pendingObjects: {
-        room: {points: undefined, color: "#FFF"},
-        door: {start: undefined, finish: undefined, color: "#FFF"}
+        room: {points: undefined, color: "#FF4444"},
+        door: {start: undefined, finish: undefined, color: "#4444FF"}
     }
 };
 
