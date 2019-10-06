@@ -34,6 +34,7 @@ export interface MapState {
 }
 
 export interface MapPropertiesState {
+    type: typeof ObjectType.MAP,
     color: string;
 }
 
@@ -42,11 +43,14 @@ export interface Point {
 }
 
 export interface Room {
+    type: typeof ObjectType.ROOM,
+    name: string;
     points: Point[];
     color: string;
 }
 
 export interface Door {
+    type: typeof ObjectType.DOOR,
     start: Point;
     finish: Point;
     color: string;
