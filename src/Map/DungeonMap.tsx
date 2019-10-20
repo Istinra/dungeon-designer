@@ -1,11 +1,11 @@
 import React, {MouseEvent} from 'react';
-import {DesignerState, Point} from "../state";
+import {DesignerState, Point, ToolMode} from "../state";
 import {connect} from 'react-redux';
 import {Dispatch} from "redux";
 import {CREATE_ROOM_ACTION} from "../actions";
 import "./DungeonMap.css"
 import {drawLine, GRID_IN_PX} from "./DungonMapConstants";
-import {RoomMapModeHandler} from "./MapModeHandler";
+import {DoorMapModeHandler, MapModeHandler, RoomMapModeHandler} from "./MapModeHandler";
 
 interface DungeonMapStateProps {
     state: DesignerState
@@ -24,14 +24,22 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
     private readonly heightPx: number;
 
     private ctx: CanvasRenderingContext2D;
-    private modeHandler: RoomMapModeHandler;
+    private modeHandler: MapModeHandler;
+    private readonly modeHandlerMapping: { [key: number]: MapModeHandler };
 
     constructor(props: Readonly<DungeonMapStateProps & DungeonMapDispatchProps>) {
         super(props);
         this.widthPx = this.props.width * GRID_IN_PX;
         this.heightPx = this.props.height * GRID_IN_PX;
         this.canvasRef = React.createRef<HTMLCanvasElement>();
-        this.modeHandler = new RoomMapModeHandler(props.roomCreated);
+        this.modeHandlerMapping = {
+            [ToolMode.SELECT]: new RoomMapModeHandler(props.roomCreated),
+            [ToolMode.DOOR]: new DoorMapModeHandler(
+                () => this.props.state.map.rooms
+            ),
+            [ToolMode.ROOM]: new RoomMapModeHandler(props.roomCreated)
+        };
+        this.modeHandler = this.modeHandlerMapping[this.props.state.toolMode];
     }
 
     componentDidMount(): void {
@@ -78,43 +86,18 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
     private onMouseMove = (event: MouseEvent) => {
         let x: number = event.clientX - this.canvasRef.current.offsetLeft;
         let y: number = event.clientY - this.canvasRef.current.offsetTop;
-        this.modeHandler.onMouseMove(x, y);
+        this.modeHandler.onMouseMove({x: x, y: y});
     };
 
     private onMapClicked = () => {
         this.modeHandler.onMapClicked();
-
-        //s = start, e = end, p = pointer, t = target along the line
-        let sx = 1, sy = 2, ex = 3, ey = 3, px = 2, py = 2;
-
-        let wallSlope = (sy - ey) / (sx - ex);
-        let wallYIntercept = sy - wallSlope * sx;
-
-        let perpSlope = -1 / wallSlope;
-        let prepYIntercept = py - perpSlope * px;
-
-        const tx = (wallYIntercept - prepYIntercept) / (perpSlope - wallSlope);
-        const ty = perpSlope * tx + prepYIntercept;
-        console.log(tx);
-        console.log(ty);
-
-        if ((tx > sx && tx > ex) || (ty > sy && ty > ey)) {
-            //Not in the line!
-            console.log("Point not on line, abort");
-        } else {
-            let vx = ex - sx;
-            let vy = ey - sy;
-            let vm = Math.sqrt(vx * vx + vy * vy);
-            vx = vx/vm;
-            vy = vy/vm;
-
-            let fromX = tx + 0.5 * vx ;
-            let fromY = ty + 0.5 * vy;
-            let toX = tx - 0.5 * vx;
-            let toY = ty - 0.5 * vy;
-            console.log(`${fromX}, ${fromY} to ${toX}, ${toY} `);
-        }
     };
+
+
+    componentDidUpdate(prevProps: Readonly<DungeonMapStateProps & DungeonMapDispatchProps>,
+                       prevState: Readonly<{}>, snapshot?: any): void {
+        this.modeHandler = this.modeHandlerMapping[this.props.state.toolMode];
+    }
 
     render() {
         return <div className="DungeonMap">

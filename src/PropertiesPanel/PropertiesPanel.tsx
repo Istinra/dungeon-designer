@@ -20,15 +20,17 @@ class PropertiesPanel extends React.Component<PropertiesPanelProps & PropertiesP
 
     render() {
         let selectedContent;
-        switch (this.props.selected.type) {
-            case ObjectType.ROOM:
-                selectedContent = this.roomProps(this.props.selected);
-                break;
-            case ObjectType.DOOR:
-                selectedContent = <span>Door</span>;
-                break;
-            default:
-                selectedContent = <span>Map</span>;
+        if (this.props.selected) {
+            switch (this.props.selected.type) {
+                case ObjectType.ROOM:
+                    selectedContent = this.roomProps(this.props.selected);
+                    break;
+                case ObjectType.DOOR:
+                    selectedContent = <span>Door</span>;
+                    break;
+                default:
+                    selectedContent = <span>Map</span>;
+            }
         }
         return <div className="PropertiesPanel">
             {selectedContent}
