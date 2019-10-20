@@ -36,12 +36,12 @@ class PropertiesPanel extends React.Component<PropertiesPanelProps & PropertiesP
     }
 
     private roomProps(room: Room) {
-        return [
+        return <span>
             <InputComponent id="prop_room_name" name="name" label="Name"
                             value={room.name} type="text" onChange={this.onChange}/>,
             <InputComponent id="prop_room_colour" name="color" label="Color"
                             value={room.color} type="color" onChange={this.onChange}/>
-        ]
+        </span>
     }
 
     private onChange = (event: React.FormEvent<HTMLInputElement>) => {

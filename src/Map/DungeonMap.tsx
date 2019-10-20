@@ -115,6 +115,36 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
         } else {
             this.activePoints.push(this.mouseGridPos);
         }
+        //s = start, e = end, p = pointer, t = target along the line
+        let sx = 1, sy = 2, ex = 3, ey = 3, px = 2, py = 2;
+
+        let wallSlope = (sy - ey) / (sx - ex);
+        let wallYIntercept = sy - wallSlope * sx;
+
+        let perpSlope = -1 / wallSlope;
+        let prepYIntercept = py - perpSlope * px;
+
+        const tx = (wallYIntercept - prepYIntercept) / (perpSlope - wallSlope);
+        const ty = perpSlope * tx + prepYIntercept;
+        console.log(tx);
+        console.log(ty);
+
+        if ((tx > sx && tx > ex) || (ty > sy && ty > ey)) {
+            //Not in the line!
+            console.log("Point not on line, abort");
+        } else {
+            let vx = ex - sx;
+            let vy = ey - sy;
+            let vm = Math.sqrt(vx * vx + vy * vy);
+            vx = vx/vm;
+            vy = vy/vm;
+
+            let fromX = tx + 0.5 * vx ;
+            let fromY = ty + 0.5 * vy;
+            let toX = tx - 0.5 * vx;
+            let toY = ty - 0.5 * vy;
+            console.log(`${fromX}, ${fromY} to ${toX}, ${toY} `);
+        }
     };
 
     render() {
