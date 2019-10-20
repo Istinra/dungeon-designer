@@ -4,6 +4,8 @@ import {connect} from 'react-redux';
 import {Dispatch} from "redux";
 import {CREATE_ROOM_ACTION} from "../actions";
 import "./DungeonMap.css"
+import {drawLine, GRID_IN_PX} from "./DungonMapConstants";
+import {RoomMapModeHandler} from "./MapModeHandler";
 
 interface DungeonMapStateProps {
     state: DesignerState
@@ -15,8 +17,6 @@ interface DungeonMapDispatchProps {
     roomCreated(points: Point[]): void;
 }
 
-const gridInPx = 40;
-
 class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispatchProps> {
 
     private readonly canvasRef: React.RefObject<HTMLCanvasElement>;
@@ -24,14 +24,14 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
     private readonly heightPx: number;
 
     private ctx: CanvasRenderingContext2D;
-    private mouseGridPos: Point;
-    private activePoints: Point[] = [];
+    private modeHandler: RoomMapModeHandler;
 
     constructor(props: Readonly<DungeonMapStateProps & DungeonMapDispatchProps>) {
         super(props);
-        this.widthPx = this.props.width * gridInPx;
-        this.heightPx = this.props.height * gridInPx;
+        this.widthPx = this.props.width * GRID_IN_PX;
+        this.heightPx = this.props.height * GRID_IN_PX;
         this.canvasRef = React.createRef<HTMLCanvasElement>();
+        this.modeHandler = new RoomMapModeHandler(props.roomCreated);
     }
 
     componentDidMount(): void {
@@ -42,14 +42,7 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
     private draw = () => {
         this.drawGrid();
         this.drawRooms();
-        if (this.activePoints.length > 0) {
-            this.ctx.fillStyle = "green";
-            this.ctx.strokeStyle = "green";
-            for (let i = 0; i < this.activePoints.length - 1; i++) {
-                this.drawLine(this.activePoints[i], this.activePoints[i + 1]);
-            }
-            this.drawLine(this.activePoints[this.activePoints.length - 1], this.mouseGridPos);
-        }
+        this.modeHandler.draw(this.ctx);
         requestAnimationFrame(this.draw)
     };
 
@@ -59,14 +52,14 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
         this.ctx.strokeStyle = "red";
         for (let i = 0; i <= this.props.width; i++) {
             this.ctx.beginPath();
-            this.ctx.moveTo(i * gridInPx, 0);
-            this.ctx.lineTo(i * gridInPx, this.heightPx);
+            this.ctx.moveTo(i * GRID_IN_PX, 0);
+            this.ctx.lineTo(i * GRID_IN_PX, this.heightPx);
             this.ctx.stroke();
         }
         for (let i = 0; i <= this.props.height; i++) {
             this.ctx.beginPath();
-            this.ctx.moveTo(0, i * gridInPx);
-            this.ctx.lineTo(this.widthPx, i * gridInPx);
+            this.ctx.moveTo(0, i * GRID_IN_PX);
+            this.ctx.lineTo(this.widthPx, i * GRID_IN_PX);
             this.ctx.stroke();
         }
     }
@@ -76,45 +69,21 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
             this.ctx.strokeStyle = room.color;
             this.ctx.fillStyle = room.color;
             for (let i = 0; i < room.points.length - 1; i++) {
-                this.drawLine(room.points[i], room.points[i + 1]);
+                drawLine(room.points[i], room.points[i + 1], this.ctx);
             }
-            this.drawLine(room.points[room.points.length - 1], room.points[0]);
+            drawLine(room.points[room.points.length - 1], room.points[0], this.ctx);
         }
-    }
-
-    private drawLine(from: Point, to: Point) {
-        this.drawPoint(from);
-        this.ctx.beginPath();
-        this.ctx.moveTo(from.x * gridInPx, from.y * gridInPx);
-        this.ctx.lineTo(to.x * gridInPx, to.y * gridInPx);
-        this.ctx.stroke();
-        this.drawPoint(to);
-    }
-
-    private drawPoint(point: Point) {
-        this.ctx.beginPath();
-        this.ctx.arc(point.x * gridInPx, point.y * gridInPx, 5, 0, 2 * Math.PI);
-        this.ctx.fill();
     }
 
     private onMouseMove = (event: MouseEvent) => {
         let x: number = event.clientX - this.canvasRef.current.offsetLeft;
         let y: number = event.clientY - this.canvasRef.current.offsetTop;
-        this.mouseGridPos = {
-            x: (x - x % gridInPx + (x % gridInPx > gridInPx / 2 ? gridInPx : 0)) / gridInPx,
-            y: (y - y % gridInPx + (y % gridInPx > gridInPx / 2 ? gridInPx : 0)) / gridInPx
-        }
+        this.modeHandler.onMouseMove(x, y);
     };
 
     private onMapClicked = () => {
-        if (this.activePoints.length !== 0 &&
-            this.activePoints[0].x === this.mouseGridPos.x &&
-            this.activePoints[0].y === this.mouseGridPos.y) {
-            this.props.roomCreated(this.activePoints);
-            this.activePoints = [];
-        } else {
-            this.activePoints.push(this.mouseGridPos);
-        }
+        this.modeHandler.onMapClicked();
+
         //s = start, e = end, p = pointer, t = target along the line
         let sx = 1, sy = 2, ex = 3, ey = 3, px = 2, py = 2;
 
