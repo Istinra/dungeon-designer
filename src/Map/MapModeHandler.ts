@@ -51,6 +51,7 @@ export class RoomMapModeHandler implements MapModeHandler {
 export class DoorMapModeHandler implements MapModeHandler {
 
     private closestRoom: Room;
+    private closestWall: { s: Point, e: Point };
     private doorPoint: Point;
     private distanceToWall: number;
 
@@ -58,23 +59,25 @@ export class DoorMapModeHandler implements MapModeHandler {
     }
 
     onMapClicked(): void {
-        // let vx = e.x - s.x;
-        // let vy = e.y - s.y;
-        // let vm = Math.sqrt(vx * vx + vy * vy);
-        // vx = vx/vm;
-        // vy = vy/vm;
-        //
-        // let fromX = tx + 0.5 * vx ;
-        // let fromY = ty + 0.5 * vy;
-        // let toX = tx - 0.5 * vx;
-        // let toY = ty - 0.5 * vy;
-        // console.log(`${fromX}, ${fromY} to ${toX}, ${toY} `);
+        let {s, e} = this.closestWall;
+        let vx = e.x - s.x;
+        let vy = e.y - s.y;
+        let vm = Math.sqrt(vx * vx + vy * vy);
+        vx = vx / vm;
+        vy = vy / vm;
+
+        let fromX = this.doorPoint.x + 0.5 * vx;
+        let fromY = this.doorPoint.y + 0.5 * vy;
+        let toX = this.doorPoint.x - 0.5 * vx;
+        let toY = this.doorPoint.y - 0.5 * vy;
+        console.log(`${fromX}, ${fromY} to ${toX}, ${toY} `);
     }
 
     onMouseMove(point: Point): void {
         point = {x: point.x / GRID_IN_PX, y: point.y / GRID_IN_PX};
         this.distanceToWall = Number.MAX_SAFE_INTEGER;
         this.closestRoom = null;
+        this.closestWall = null;
         this.doorPoint = null;
         const rooms = this.roomsProvider();
         for (let room of rooms) {
@@ -98,19 +101,35 @@ export class DoorMapModeHandler implements MapModeHandler {
 
         if ((tx > s.x && tx > e.x) || (ty > s.y && ty > e.y)) {
             //Not in the line!
-            console.log("Point not on line, abort");
+            // console.log("Point not on line, abort");
         } else {
             let dx = p.x - tx, dy = p.y - ty;
             let dist = Math.sqrt(dx * dx + dy * dy);
-            console.log(this.distanceToWall);
             if (this.distanceToWall > dist) {
                 this.closestRoom = room;
-                this.doorPoint = {x: tx, y: ty}
+                this.closestWall = {s: s, e: e};
+                this.doorPoint = {x: tx, y: ty};
                 this.distanceToWall = dist;
             }
         }
     }
 
     draw(ctx: CanvasRenderingContext2D): void {
+        if (this.closestWall) {
+            let {s, e} = this.closestWall;
+            let vx = e.x - s.x;
+            let vy = e.y - s.y;
+            let vm = Math.sqrt(vx * vx + vy * vy);
+            vx = vx / vm;
+            vy = vy / vm;
+
+            let fromX = this.doorPoint.x + 0.5 * vx;
+            let fromY = this.doorPoint.y + 0.5 * vy;
+            let toX = this.doorPoint.x - 0.5 * vx;
+            let toY = this.doorPoint.y - 0.5 * vy;
+            ctx.strokeStyle = "yellow";
+            ctx.fillStyle = "yellow";
+            drawLine({x: fromX, y: fromY}, {x: toX, y: toY}, ctx);
+        }
     }
 }
