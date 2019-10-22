@@ -82,23 +82,32 @@ export class DoorMapModeHandler implements MapModeHandler {
 
     private setIfClosest(room: Room, s: Point, e: Point, p: Point): void {
 
-        let wallSlope = s.x - e.x === 0 ? 0 : (s.y - e.y) / (s.x - e.x);
-        let wallYIntercept = s.y - wallSlope * s.x;
+        let t: Point;
+        if (s.x === e.x) {
+            t = {x: s.x, y: p.y};
+        } else if (s.y === e.y) {
+            t = {x: p.x, y: s.y};
+        } else {
+            let wallSlope = (s.y - e.y) / (s.x - e.x);
+            let wallYIntercept = s.y - wallSlope * s.x;
 
-        let perpSlope = wallSlope === 0 ? 0 : -1 / wallSlope;
-        let prepYIntercept = p.y - perpSlope * p.x;
+            let perpSlope = -1 / wallSlope;
+            let prepYIntercept = p.y - perpSlope * p.x;
 
-        const tx = perpSlope - wallSlope === 0 ? 0 : (wallYIntercept - prepYIntercept) / (perpSlope - wallSlope);
-        const ty = perpSlope * tx + prepYIntercept;
+            const tx = (wallYIntercept - prepYIntercept) / (perpSlope - wallSlope);
+            const ty = perpSlope * tx + prepYIntercept;
 
-        if (((s.x < e.x && tx > s.x + 0.25 && tx < e.x - 0.25) || (tx < s.x - 0.25 && tx > e.x + 0.25)) &&
-            ((s.y < e.y && ty > s.y + 0.25 && ty < e.y - 0.25) || (ty < s.y - 0.25 && ty > e.y + 0.25))) {
-            let dx = p.x - tx, dy = p.y - ty;
+            t = {x: tx, y: ty};
+        }
+
+        if ((s.x === e.x || (s.x < e.x && t.x > s.x + 0.25 && t.x < e.x - 0.25) || (t.x < s.x - 0.25 && t.x > e.x + 0.25)) &&
+            (s.y === e.y || (s.y < e.y && t.y > s.y + 0.25 && t.y < e.y - 0.25) || (t.y < s.y - 0.25 && t.y > e.y + 0.25))) {
+            let dx = p.x - t.x, dy = p.y - t.y;
             let dist = Math.sqrt(dx * dx + dy * dy);
             if (this.distanceToWall > dist) {
                 this.closestRoom = room;
                 this.closestWall = {s: s, e: e};
-                this.doorPoint = {x: tx, y: ty};
+                this.doorPoint = {x: t.x, y: t.y};
                 this.distanceToWall = dist;
             }
         }
