@@ -91,10 +91,8 @@ export class DoorMapModeHandler implements MapModeHandler {
         const tx = perpSlope - wallSlope === 0 ? 0 : (wallYIntercept - prepYIntercept) / (perpSlope - wallSlope);
         const ty = perpSlope * tx + prepYIntercept;
 
-        if ((tx > s.x && tx > e.x) || (ty > s.y && ty > e.y)) {
-            //Not in the line!
-            // console.log("Point not on line, abort");
-        } else {
+        if (((s.x < e.x && tx > s.x + 0.25 && tx < e.x - 0.25) || (tx < s.x - 0.25 && tx > e.x + 0.25)) &&
+            ((s.y < e.y && ty > s.y + 0.25 && ty < e.y - 0.25) || (ty < s.y - 0.25 && ty > e.y + 0.25))) {
             let dx = p.x - tx, dy = p.y - ty;
             let dist = Math.sqrt(dx * dx + dy * dy);
             if (this.distanceToWall > dist) {
