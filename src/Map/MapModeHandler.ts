@@ -55,22 +55,14 @@ export class DoorMapModeHandler implements MapModeHandler {
     private doorPoint: Point;
     private distanceToWall: number;
 
-    public constructor(private roomsProvider: { (): Room[] }) {
+    public constructor(private roomsProvider: { (): Room[] },
+                       private doorCreated: { (points: { from: Point, to: Point }): void }) {
     }
 
     onMapClicked(): void {
-        let {s, e} = this.closestWall;
-        let vx = e.x - s.x;
-        let vy = e.y - s.y;
-        let vm = Math.sqrt(vx * vx + vy * vy);
-        vx = vx / vm;
-        vy = vy / vm;
-
-        let fromX = this.doorPoint.x + 0.5 * vx;
-        let fromY = this.doorPoint.y + 0.5 * vy;
-        let toX = this.doorPoint.x - 0.5 * vx;
-        let toY = this.doorPoint.y - 0.5 * vy;
-        console.log(`${fromX}, ${fromY} to ${toX}, ${toY} `);
+        if (this.distanceToWall && this.closestWall && this.doorPoint) {
+            this.doorCreated(this.calculateDoor());
+        }
     }
 
     onMouseMove(point: Point): void {
@@ -116,20 +108,29 @@ export class DoorMapModeHandler implements MapModeHandler {
 
     draw(ctx: CanvasRenderingContext2D): void {
         if (this.closestWall) {
-            let {s, e} = this.closestWall;
-            let vx = e.x - s.x;
-            let vy = e.y - s.y;
-            let vm = Math.sqrt(vx * vx + vy * vy);
-            vx = vx / vm;
-            vy = vy / vm;
-
-            let fromX = this.doorPoint.x + 0.5 * vx;
-            let fromY = this.doorPoint.y + 0.5 * vy;
-            let toX = this.doorPoint.x - 0.5 * vx;
-            let toY = this.doorPoint.y - 0.5 * vy;
             ctx.strokeStyle = "yellow";
             ctx.fillStyle = "yellow";
-            drawLine({x: fromX, y: fromY}, {x: toX, y: toY}, ctx);
+            let {from, to} = this.calculateDoor();
+            drawLine(from, to, ctx);
+        }
+    }
+
+    private calculateDoor(): { from: Point, to: Point } {
+        let {s, e} = this.closestWall;
+        let vx = e.x - s.x;
+        let vy = e.y - s.y;
+        let vm = Math.sqrt(vx * vx + vy * vy);
+        vx = vx / vm;
+        vy = vy / vm;
+        return {
+            from: {
+                x: this.doorPoint.x + 0.5 * vx,
+                y: this.doorPoint.y + 0.5 * vy
+            },
+            to: {
+                x: this.doorPoint.x - 0.5 * vx,
+                y: this.doorPoint.y - 0.5 * vy
+            }
         }
     }
 }

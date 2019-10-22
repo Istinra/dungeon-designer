@@ -1,6 +1,7 @@
 import {DesignerState, ObjectType, ToolMode} from "./state";
 import {
     CHANGE_MODE_ACTION,
+    CREATE_DOOR_ACTION,
     CREATE_ROOM_ACTION,
     DesignerActionTypes,
     UPDATE_DOOR_PROPERTIES,
@@ -21,7 +22,7 @@ const initialState: DesignerState = {
     },
     pendingObjects: {
         room: {points: undefined, color: "#FF4444", name: "", type: ObjectType.ROOM},
-        door: {start: undefined, finish: undefined, color: "#4444FF", type: ObjectType.DOOR}
+        door: {from: undefined, to: undefined, color: "#4444FF", type: ObjectType.DOOR}
     }
 };
 
@@ -32,6 +33,13 @@ export function designerReducer(state: DesignerState = initialState, action: Des
                 ...state,
                 map: {
                     ...state.map, rooms: [...state.map.rooms, {...state.pendingObjects.room, points: action.payload}]
+                }
+            };
+        case CREATE_DOOR_ACTION:
+            return {
+                ...state,
+                map: {
+                    ...state.map, doors: [...state.map.doors, {...state.pendingObjects.door, ...action.payload}]
                 }
             };
         case CHANGE_MODE_ACTION:

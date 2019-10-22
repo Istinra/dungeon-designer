@@ -39,7 +39,8 @@ export interface MapPropertiesState {
 }
 
 export interface Point {
-    x, y: number;
+    x,
+    y: number;
 }
 
 export interface Room {
@@ -51,7 +52,7 @@ export interface Room {
 
 export interface Door {
     type: typeof ObjectType.DOOR,
-    start: Point;
-    finish: Point;
+    from: Point;
+    to: Point;
     color: string;
 }

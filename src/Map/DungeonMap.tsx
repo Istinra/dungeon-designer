@@ -2,7 +2,7 @@ import React, {MouseEvent} from 'react';
 import {DesignerState, Point, ToolMode} from "../state";
 import {connect} from 'react-redux';
 import {Dispatch} from "redux";
-import {CREATE_ROOM_ACTION} from "../actions";
+import {CREATE_DOOR_ACTION, CREATE_ROOM_ACTION} from "../actions";
 import "./DungeonMap.css"
 import {drawLine, GRID_IN_PX} from "./DungonMapConstants";
 import {DoorMapModeHandler, MapModeHandler, RoomMapModeHandler} from "./MapModeHandler";
@@ -15,6 +15,8 @@ interface DungeonMapStateProps {
 
 interface DungeonMapDispatchProps {
     roomCreated(points: Point[]): void;
+
+    doorCreated(points: { from: Point, to: Point }): void;
 }
 
 class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispatchProps> {
@@ -35,7 +37,8 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
         this.modeHandlerMapping = {
             [ToolMode.SELECT]: new RoomMapModeHandler(props.roomCreated),
             [ToolMode.DOOR]: new DoorMapModeHandler(
-                () => this.props.state.map.rooms
+                () => this.props.state.map.rooms,
+                props.doorCreated
             ),
             [ToolMode.ROOM]: new RoomMapModeHandler(props.roomCreated)
         };
@@ -50,6 +53,7 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
     private draw = () => {
         this.drawGrid();
         this.drawRooms();
+        this.drawDoors();
         this.modeHandler.draw(this.ctx);
         requestAnimationFrame(this.draw)
     };
@@ -80,6 +84,14 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
                 drawLine(room.points[i], room.points[i + 1], this.ctx);
             }
             drawLine(room.points[room.points.length - 1], room.points[0], this.ctx);
+        }
+    }
+
+    private drawDoors(): void {
+        for (let door of this.props.state.map.doors) {
+            this.ctx.strokeStyle = door.color;
+            this.ctx.fillStyle = door.color;
+            drawLine(door.from, door.to, this.ctx);
         }
     }
 
@@ -119,7 +131,9 @@ function mapStateToProps(state: DesignerState, ownProps): DungeonMapStateProps {
 function mapStateToDispatch(dispatch: Dispatch): DungeonMapDispatchProps {
     return {
         roomCreated: (points: Point[]) =>
-            dispatch({type: CREATE_ROOM_ACTION, payload: points})
+            dispatch({type: CREATE_ROOM_ACTION, payload: points}),
+        doorCreated: (points: { from: Point, to: Point }) =>
+            dispatch({type: CREATE_DOOR_ACTION, payload: points})
     }
 }
 
