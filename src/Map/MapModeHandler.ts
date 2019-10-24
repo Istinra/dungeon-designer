@@ -50,37 +50,34 @@ export class RoomMapModeHandler implements MapModeHandler {
 
 export class DoorMapModeHandler implements MapModeHandler {
 
-    private closestRoom: Room;
-    private closestWall: { s: Point, e: Point };
-    private doorPoint: Point;
     private distanceToWall: number;
+
+    private pendingDoor?: { from: Point, to: Point };
 
     public constructor(private roomsProvider: { (): Room[] },
                        private doorCreated: { (points: { from: Point, to: Point }): void }) {
     }
 
     onMapClicked(): void {
-        if (this.distanceToWall && this.closestWall && this.doorPoint) {
-            this.doorCreated(this.calculateDoor());
+        if (this.pendingDoor) {
+            this.doorCreated(this.pendingDoor);
         }
     }
 
     onMouseMove(point: Point): void {
         point = {x: point.x / GRID_IN_PX, y: point.y / GRID_IN_PX};
         this.distanceToWall = Number.MAX_SAFE_INTEGER;
-        this.closestRoom = null;
-        this.closestWall = null;
-        this.doorPoint = null;
+        this.pendingDoor = null;
         const rooms = this.roomsProvider();
         for (let room of rooms) {
             for (let i = 0; i < room.points.length - 1; i++) {
-                this.setIfClosest(room, room.points[i], room.points[i + 1], point)
+                this.setIfClosest(room.points[i], room.points[i + 1], point)
             }
-            this.setIfClosest(room, room.points[room.points.length - 1], room.points[0], point)
+            this.setIfClosest(room.points[room.points.length - 1], room.points[0], point)
         }
     }
 
-    private setIfClosest(room: Room, s: Point, e: Point, p: Point): void {
+    private setIfClosest(s: Point, e: Point, p: Point): void {
 
         let t: Point;
         if (s.x === e.x) {
@@ -88,11 +85,11 @@ export class DoorMapModeHandler implements MapModeHandler {
         } else if (s.y === e.y) {
             t = {x: p.x, y: s.y};
         } else {
-            let wallSlope = (s.y - e.y) / (s.x - e.x);
-            let wallYIntercept = s.y - wallSlope * s.x;
+            const wallSlope = (s.y - e.y) / (s.x - e.x);
+            const wallYIntercept = s.y - wallSlope * s.x;
 
-            let perpSlope = -1 / wallSlope;
-            let prepYIntercept = p.y - perpSlope * p.x;
+            const perpSlope = -1 / wallSlope;
+            const prepYIntercept = p.y - perpSlope * p.x;
 
             const tx = (wallYIntercept - prepYIntercept) / (perpSlope - wallSlope);
             const ty = perpSlope * tx + prepYIntercept;
@@ -100,44 +97,39 @@ export class DoorMapModeHandler implements MapModeHandler {
             t = {x: tx, y: ty};
         }
 
-        if ((s.x === e.x || (s.x < e.x && t.x > s.x + 0.25 && t.x < e.x - 0.25) || (t.x < s.x - 0.25 && t.x > e.x + 0.25)) &&
-            (s.y === e.y || (s.y < e.y && t.y > s.y + 0.25 && t.y < e.y - 0.25) || (t.y < s.y - 0.25 && t.y > e.y + 0.25))) {
-            let dx = p.x - t.x, dy = p.y - t.y;
-            let dist = Math.sqrt(dx * dx + dy * dy);
-            if (this.distanceToWall > dist) {
-                this.closestRoom = room;
-                this.closestWall = {s: s, e: e};
-                this.doorPoint = {x: t.x, y: t.y};
-                this.distanceToWall = dist;
+        const dx = p.x - t.x, dy = p.y - t.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance < this.distanceToWall && distance < 6) {
+
+            const vx = e.x - s.x, vy = e.y - s.y;
+            const vm = Math.sqrt(vx * vx + vy * vy);
+            const doorSpanX = 0.5 * vx / vm;
+            const doorSpanY = 0.5 * vy / vm;
+
+            const d = {
+                from: {
+                    x: t.x - doorSpanX,
+                    y: t.y - doorSpanY
+                },
+                to: {
+                    x: t.x + doorSpanX,
+                    y: t.y + doorSpanY
+                }
+            };
+            if ((s.x === e.x || (s.x < e.x && s.x < d.from.x && e.x > d.to.x) || (s.x > d.from.x && e.x < d.to.x)) &&
+                (s.y === e.y || (s.y < e.y && s.y < d.from.y && e.y > d.to.y) || (s.y > d.from.y && e.y < d.to.y))) {
+                this.distanceToWall = distance;
+                this.pendingDoor = d;
             }
         }
     }
 
     draw(ctx: CanvasRenderingContext2D): void {
-        if (this.closestWall) {
+        if (this.pendingDoor) {
             ctx.strokeStyle = "yellow";
             ctx.fillStyle = "yellow";
-            let {from, to} = this.calculateDoor();
-            drawLine(from, to, ctx);
-        }
-    }
-
-    private calculateDoor(): { from: Point, to: Point } {
-        let {s, e} = this.closestWall;
-        let vx = e.x - s.x;
-        let vy = e.y - s.y;
-        let vm = Math.sqrt(vx * vx + vy * vy);
-        vx = vx / vm;
-        vy = vy / vm;
-        return {
-            from: {
-                x: this.doorPoint.x + 0.5 * vx,
-                y: this.doorPoint.y + 0.5 * vy
-            },
-            to: {
-                x: this.doorPoint.x - 0.5 * vx,
-                y: this.doorPoint.y - 0.5 * vy
-            }
+            drawLine(this.pendingDoor.from, this.pendingDoor.to, ctx);
         }
     }
 }
