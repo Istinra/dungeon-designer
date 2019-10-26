@@ -4,6 +4,7 @@ import {
     CREATE_DOOR_ACTION,
     CREATE_ROOM_ACTION,
     DesignerActionTypes,
+    SELECT_OBJECT,
     UPDATE_DOOR_PROPERTIES,
     UPDATE_MAP_PROPERTIES,
     UPDATE_ROOM_PROPERTIES,
@@ -81,6 +82,9 @@ export function designerReducer(state: DesignerState = initialState, action: Des
                     pendingObjects: {...state.pendingObjects, door: action.payload}
                 };
             }
+        }
+        case SELECT_OBJECT: {
+            return {...state, selected: action.payload};
         }
     }
     return state;
