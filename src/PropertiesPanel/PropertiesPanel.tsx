@@ -26,7 +26,7 @@ class PropertiesPanel extends React.Component<PropertiesPanelProps & PropertiesP
                     selectedContent = this.roomProps(this.props.selected);
                     break;
                 case ObjectType.DOOR:
-                    selectedContent = <span>Door</span>;
+                    selectedContent = this.doorProps(this.props.selected);
                     break;
                 default:
                     selectedContent = <span>Map</span>;
@@ -46,6 +46,11 @@ class PropertiesPanel extends React.Component<PropertiesPanelProps & PropertiesP
         </span>
     }
 
+    private doorProps(door: Door) {
+        return <InputComponent id="prop_room_colour" name="color" label="Color"
+                               value={door.color} type="color" onChange={this.onChange}/>
+    }
+
     private onChange = (event: React.FormEvent<HTMLInputElement>) => {
         this.props.onUpdate({...this.props.selected, color: event.currentTarget.value});
     }
@@ -59,20 +64,17 @@ function mapStateToProps(state: DesignerState): PropertiesPanelProps {
                     case ObjectType.ROOM:
                         return {selected: state.map.rooms[state.selected.index]};
                     case ObjectType.DOOR:
-                        //TODO Fetch selected door
-                        return {selected: null};
+                        return {selected: state.map.doors[state.selected.index]};
                 }
             }
             break;
         case ToolMode.ROOM:
             return {selected: state.pendingObjects.room};
         case ToolMode.DOOR:
-            //todo state.pendingObjects.door
-            return {selected: null};
+            return {selected: state.pendingObjects.door};
 
     }
-    // TODO return map props
-    return {selected: null};
+    return {selected: state.map.properties};
 }
 
 function mapStateToDispatch(dispatch: Dispatch): PropertiesPanelDispatch {
