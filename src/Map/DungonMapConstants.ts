@@ -18,8 +18,8 @@ export function drawPoint(point: Point, ctx: CanvasRenderingContext2D) {
 }
 
 export function drawBlock(from: Point, to: Point, normalVec: Point, ctx: CanvasRenderingContext2D) {
-    const x = -normalVec.y / 5 * GRID_IN_PX;
-    const y = normalVec.x / 5 * GRID_IN_PX;
+    const x = normalVec.x * GRID_IN_PX;
+    const y = normalVec.y * GRID_IN_PX;
 
     ctx.beginPath();
     ctx.moveTo(from.x * GRID_IN_PX - x, from.y * GRID_IN_PX - y);

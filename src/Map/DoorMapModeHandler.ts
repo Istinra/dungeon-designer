@@ -58,21 +58,22 @@ export class DoorMapModeHandler implements MapModeHandler {
 
             const vx = e.x - s.x, vy = e.y - s.y;
             const vm = Math.sqrt(vx * vx + vy * vy);
-            const normalVec: Point = {
-                x: 0.5 * vx / vm,
-                y: 0.5 * vy / vm
-            };
+            const doorSpanX = 0.5 * vx / vm;
+            const doorSpanY = 0.5 * vy / vm;
 
             let d = {
                 from: {
-                    x: t.x - normalVec.x,
-                    y: t.y - normalVec.y
+                    x: t.x - doorSpanX,
+                    y: t.y - doorSpanY
                 },
                 to: {
-                    x: t.x + normalVec.x,
-                    y: t.y + normalVec.y
+                    x: t.x + doorSpanX,
+                    y: t.y + doorSpanY
                 },
-                normalVec: normalVec
+                normalVec: {
+                    x: -vy / vm / 10,
+                    y: vx / vm / 10
+                }
             };
             if ((s.x === e.x || (s.x < e.x && s.x < d.from.x && e.x > d.to.x) || (s.x > d.from.x && e.x < d.to.x)) &&
                 (s.y === e.y || (s.y < e.y && s.y < d.from.y && e.y > d.to.y) || (s.y > d.from.y && e.y < d.to.y))) {

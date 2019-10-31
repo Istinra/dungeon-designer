@@ -11,7 +11,7 @@
 * Openings can be on walls of existing rooms
 
 Phase 4 - Selection
-* Picking works
+* ~~Picking works~~
 * Map Properties can be changed / fleshed out
 * Type of opening can be specified i.e. Door, Open Entrance, etc... 
 

@@ -1,5 +1,5 @@
 import {MapModeHandler} from "./MapModeHandler";
-import {MapState, ObjectType, Point, SelectedState} from "../state";
+import {Door, MapState, ObjectType, Point, Room, SelectedState} from "../state";
 import {GRID_IN_PX} from "./DungonMapConstants";
 
 export class SelectMapModeHandler implements MapModeHandler {
@@ -17,6 +17,13 @@ export class SelectMapModeHandler implements MapModeHandler {
     }
 
     onMapClicked(state: MapState): void {
+        for (let i = 0; i < state.doors.length; i++) {
+            const door = state.doors[i];
+            if (this.testDoor(door)) {
+                this.onSelection({type: ObjectType.DOOR, index: i});
+                return;
+            }
+        }
         for (let i = 0; i < state.rooms.length; i++) {
             const room = state.rooms[i];
             if (this.testRoom(room)) {
@@ -27,7 +34,34 @@ export class SelectMapModeHandler implements MapModeHandler {
         this.onSelection({type: ObjectType.MAP, index: 0});
     }
 
-    private testRoom(room): boolean {
+    private testDoor(door: Door): boolean {
+        let count = 0;
+
+        const x = door.normalVec.x;
+        const y = door.normalVec.y;
+
+        const cornerA = { x: door.from.x - x, y: door.from.y - y };
+        const cornerB = { x: door.from.x + x, y: door.from.y + y };
+        const cornerC = { x: door.to.x + x, y: door.to.y + y };
+        const cornerD = { x: door.to.x - x, y: door.to.y - y };
+        
+        if (this.intersectsLine(cornerA, cornerB)) {
+            count++;
+        }
+        if (this.intersectsLine(cornerB, cornerC)) {
+            count++;
+        }
+        if (this.intersectsLine(cornerC, cornerD)) {
+            count++;
+        }
+        if (this.intersectsLine(cornerD, cornerA)) {
+            count++;
+        }
+
+        return count % 2 === 1;
+    }
+
+    private testRoom(room: Room): boolean {
         let count = 0;
         for (let i = 0; i < room.points.length - 1; i++) {
             if (this.intersectsLine(room.points[i], room.points[i + 1])) {
@@ -40,7 +74,7 @@ export class SelectMapModeHandler implements MapModeHandler {
         return count % 2 === 1;
     }
 
-    private intersectsLine(from, to) {
+    private intersectsLine(from, to): boolean {
         if (from.y <= to.y) {
             if (this.mousePoint.y <= from.y || this.mousePoint.y > to.y ||
                 (this.mousePoint.x >= from.x && this.mousePoint.x >= to.x)) {
