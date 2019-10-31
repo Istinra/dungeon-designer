@@ -4,7 +4,7 @@ import {connect} from 'react-redux';
 import {Dispatch} from "redux";
 import {CREATE_DOOR_ACTION, CREATE_ROOM_ACTION, SELECT_OBJECT} from "../actions";
 import "./DungeonMap.css"
-import {drawLine, GRID_IN_PX} from "./DungonMapConstants";
+import {drawBlock, drawLine, GRID_IN_PX} from "./DungonMapConstants";
 import {MapModeHandler} from "./MapModeHandler";
 import {RoomMapModeHandler} from "./RoomMapModeHandler";
 import {DoorMapModeHandler} from "./DoorMapModeHandler";
@@ -19,7 +19,7 @@ interface DungeonMapStateProps {
 interface DungeonMapDispatchProps {
     roomCreated(points: Point[]): void;
 
-    doorCreated(points: { from: Point, to: Point }): void;
+    doorCreated(points: { from: Point, to: Point, normalVec: Point }): void;
 
     onSelection(selected: SelectedState): void;
 }
@@ -93,7 +93,7 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
         for (let door of this.props.state.map.doors) {
             this.ctx.strokeStyle = door.color;
             this.ctx.fillStyle = door.color;
-            drawLine(door.from, door.to, this.ctx);
+            drawBlock(door.from, door.to, door.normalVec, this.ctx);
         }
     }
 

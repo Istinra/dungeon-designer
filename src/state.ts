@@ -54,5 +54,6 @@ export interface Door {
     type: typeof ObjectType.DOOR,
     from: Point;
     to: Point;
+    normalVec: Point;
     color: string;
 }

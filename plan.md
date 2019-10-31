@@ -3,11 +3,11 @@
 * State model sorted
 * Update model sorted
 
-Phase 2 - Basic Properties:
+~~Phase 2~~ - Basic Properties:
 * Restyle
 * Properties panel can change object colours
 
-Phase 3 - Doors / Openings
+~~Phase 3~~ - Doors / Openings
 * Openings can be on walls of existing rooms
 
 Phase 4 - Selection
