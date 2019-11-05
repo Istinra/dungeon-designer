@@ -52,8 +52,8 @@ class PropertiesPanel extends React.Component<PropertiesPanelProps & PropertiesP
                                value={door.color} type="color" onChange={this.onChange}/>
     }
 
-    private onChange = (event: React.FormEvent<HTMLInputElement>) => {
-        this.props.onUpdate({...this.props.selected, color: event.currentTarget.value});
+    private onChange = (name: string, value: string) => {
+        this.props.onUpdate({...this.props.selected, [name]: value});
     }
 }
 

@@ -8,14 +8,46 @@ interface InputProps {
     value: string;
     type: string;
 
-    onChange(event: React.FormEvent<HTMLInputElement>): void;
+    onChange(name: string, value: string): void;
 }
 
-export function InputComponent(props: InputProps) {
-    return <label htmlFor={props.id} className="InputComponent">
-        {props.label}:
-        <div className="InputComponent-control">
-            <input id={props.id} type={props.type} value={props.value} onChange={props.onChange}/>
-        </div>
-    </label>;
+interface InputState {
+    value: string;
+}
+
+export class InputComponent extends React.Component<InputProps, InputState> {
+
+    constructor(props: Readonly<InputProps>) {
+        super(props);
+        this.state = {value: props.value};
+    }
+
+    componentDidUpdate(prevProps: Readonly<InputProps>, prevState: Readonly<InputState>): void {
+        if (this.props.value !== prevProps.value) {
+            this.setState({value: this.props.value});
+        }
+    }
+
+    render() {
+        return <label htmlFor={this.props.id} className="InputComponent">
+            {this.props.label}:
+            <div className="InputComponent-control">
+                <input id={this.props.id} type={this.props.type} value={this.state.value}
+                       onChange={this.onChange} onBlur={this.onBlur}/>
+            </div>
+        </label>;
+    }
+
+    private onChange = (event: React.FormEvent<HTMLInputElement>) => {
+        this.setState({value: event.currentTarget.value});
+        if (this.props.type !== "text") {
+            this.props.onChange(this.props.name, event.currentTarget.value);
+        }
+    };
+
+    private onBlur = () => {
+        if (this.props.value !== this.state.value) {
+            this.props.onChange(this.props.name, this.state.value);
+        }
+    };
 }
