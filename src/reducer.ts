@@ -12,7 +12,11 @@ import {
 
 const initialState: DesignerState = {
     map: {
-        properties: {color: "#111111", type: ObjectType.MAP},
+        properties: {
+            type: ObjectType.MAP,
+            gridLineColor: "#22222f",
+            backgroundColor: "#000000"
+        },
         rooms: [],
         doors: []
     },
@@ -22,8 +26,8 @@ const initialState: DesignerState = {
         index: 0
     },
     pendingObjects: {
-        room: {points: undefined, color: "#FF4444", name: "", type: ObjectType.ROOM},
-        door: {from: undefined, to: undefined, normalVec: undefined, color: "#4444FF", type: ObjectType.DOOR}
+        room: {points: undefined, color: "#FF4444", name: "", type: ObjectType.ROOM, wallThickness: 2},
+        door: {from: undefined, to: undefined, normalVec: undefined, color: "#FFFF77", type: ObjectType.DOOR}
     }
 };
 

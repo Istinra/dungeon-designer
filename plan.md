@@ -12,11 +12,14 @@
 
 Phase 4 - Selection
 * ~~Picking works~~
-* Map Properties can be changed / fleshed out
+* ~~Map Properties can be changed / fleshed out~~
 * Type of opening can be specified i.e. Door, Open Entrance, etc... 
 
 Phase 5 - Save and Load
 * Map can be saved and loaded
 * MVP complete!
 
-Phase N - 3d Preview
+Phase N - ???
+* 3d Preview
+* Real time collaboration
+* Random Generation

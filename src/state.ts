@@ -35,7 +35,8 @@ export interface MapState {
 
 export interface MapPropertiesState {
     type: typeof ObjectType.MAP,
-    color: string;
+    gridLineColor: string;
+    backgroundColor: string;
 }
 
 export interface Point {
@@ -48,6 +49,7 @@ export interface Room {
     name: string;
     points: Point[];
     color: string;
+    wallThickness: number;
 }
 
 export interface Door {

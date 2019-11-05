@@ -61,9 +61,9 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
     };
 
     private drawGrid() {
-        this.ctx.fillStyle = "black";
+        this.ctx.fillStyle = this.props.state.map.properties.backgroundColor;
         this.ctx.fillRect(0, 0, this.widthPx, this.heightPx);
-        this.ctx.strokeStyle = "red";
+        this.ctx.strokeStyle = this.props.state.map.properties.gridLineColor;
         for (let i = 0; i <= this.props.width; i++) {
             this.ctx.beginPath();
             this.ctx.moveTo(i * GRID_IN_PX, 0);
@@ -83,9 +83,9 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
             this.ctx.strokeStyle = room.color;
             this.ctx.fillStyle = room.color;
             for (let i = 0; i < room.points.length - 1; i++) {
-                drawLine(room.points[i], room.points[i + 1], this.ctx);
+                drawLine(room.points[i], room.points[i + 1], this.ctx, room.wallThickness);
             }
-            drawLine(room.points[room.points.length - 1], room.points[0], this.ctx);
+            drawLine(room.points[room.points.length - 1], room.points[0], this.ctx, room.wallThickness);
         }
     }
 

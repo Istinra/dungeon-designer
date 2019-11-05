@@ -5,10 +5,10 @@ interface InputProps {
     id: string;
     name: string;
     label: string;
-    value: string;
+    value: any;
     type: string;
 
-    onChange(name: string, value: string): void;
+    onChange(name: string, value: any): void;
 }
 
 interface InputState {

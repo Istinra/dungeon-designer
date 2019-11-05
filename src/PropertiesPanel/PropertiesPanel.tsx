@@ -29,12 +29,22 @@ class PropertiesPanel extends React.Component<PropertiesPanelProps & PropertiesP
                     selectedContent = this.doorProps(this.props.selected);
                     break;
                 default:
-                    selectedContent = <span>Map</span>;
+                    selectedContent = this.mapProps(this.props.selected);
             }
         }
         return <div className="PropertiesPanel">
             {selectedContent}
         </div>
+    }
+
+    private mapProps(map: MapPropertiesState) {
+        return <span>
+            <h3>Map Properties</h3>
+            <InputComponent id="map_grid_colour" name="gridLineColor" label="Grid Colour"
+                            value={map.gridLineColor} type="color" onChange={this.onChange}/>
+            <InputComponent id="map_bg_colour" name="backgroundColor" label="Background Colour"
+                            value={map.backgroundColor} type="color" onChange={this.onChange}/>
+        </span>
     }
 
     private roomProps(room: Room) {
@@ -44,12 +54,17 @@ class PropertiesPanel extends React.Component<PropertiesPanelProps & PropertiesP
                             value={room.name} type="text" onChange={this.onChange}/>
             <InputComponent id="prop_room_colour" name="color" label="Color"
                             value={room.color} type="color" onChange={this.onChange}/>
+            <InputComponent id="prop_room_colour" name="wallThickness" label="Wall Thickness"
+                            value={room.wallThickness} type="number" onChange={this.onChange}/>
         </span>
     }
 
     private doorProps(door: Door) {
-        return <InputComponent id="prop_room_colour" name="color" label="Color"
-                               value={door.color} type="color" onChange={this.onChange}/>
+        return <span>
+            <h3>Door Properties</h3>
+            <InputComponent id="prop_room_colour" name="color" label="Color"
+                            value={door.color} type="color" onChange={this.onChange}/>
+        </span>
     }
 
     private onChange = (name: string, value: string) => {
