@@ -9,7 +9,7 @@ class App extends React.Component {
     render() {
         return <div className="App-main-layout">
             <ToolBar/>
-            <DungeonMap width={20} height={20}/>
+            <DungeonMap/>
             <PropertiesPanel/>
         </div>;
     }

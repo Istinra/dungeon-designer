@@ -37,6 +37,8 @@ export interface MapPropertiesState {
     type: typeof ObjectType.MAP,
     gridLineColor: string;
     backgroundColor: string;
+    width,
+    height: number;
 }
 
 export interface Point {

@@ -12,8 +12,6 @@ import {SelectMapModeHandler} from "./SelectMapModeHandler";
 
 interface DungeonMapStateProps {
     state: DesignerState
-    width: number;
-    height: number;
 }
 
 interface DungeonMapDispatchProps {
@@ -24,11 +22,14 @@ interface DungeonMapDispatchProps {
     onSelection(selected: SelectedState): void;
 }
 
-class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispatchProps> {
+interface DungeonMapState {
+    widthPx: number;
+    heightPx: number;
+}
+
+class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispatchProps, DungeonMapState> {
 
     private readonly canvasRef: React.RefObject<HTMLCanvasElement>;
-    private readonly widthPx: number;
-    private readonly heightPx: number;
 
     private ctx: CanvasRenderingContext2D;
     private modeHandler: MapModeHandler;
@@ -36,8 +37,10 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
 
     constructor(props: Readonly<DungeonMapStateProps & DungeonMapDispatchProps>) {
         super(props);
-        this.widthPx = this.props.width * GRID_IN_PX;
-        this.heightPx = this.props.height * GRID_IN_PX;
+        this.state = {
+            widthPx: this.props.state.map.properties.width * GRID_IN_PX,
+            heightPx: this.props.state.map.properties.height * GRID_IN_PX
+        };
         this.canvasRef = React.createRef<HTMLCanvasElement>();
         this.modeHandlerMapping = {
             [ToolMode.SELECT]: new SelectMapModeHandler(props.onSelection),
@@ -62,18 +65,18 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
 
     private drawGrid() {
         this.ctx.fillStyle = this.props.state.map.properties.backgroundColor;
-        this.ctx.fillRect(0, 0, this.widthPx, this.heightPx);
+        this.ctx.fillRect(0, 0, this.state.widthPx, this.state.heightPx);
         this.ctx.strokeStyle = this.props.state.map.properties.gridLineColor;
-        for (let i = 0; i <= this.props.width; i++) {
+        for (let i = 0; i <= this.props.state.map.properties.width; i++) {
             this.ctx.beginPath();
             this.ctx.moveTo(i * GRID_IN_PX, 0);
-            this.ctx.lineTo(i * GRID_IN_PX, this.heightPx);
+            this.ctx.lineTo(i * GRID_IN_PX, this.state.heightPx);
             this.ctx.stroke();
         }
-        for (let i = 0; i <= this.props.height; i++) {
+        for (let i = 0; i <= this.props.state.map.properties.height; i++) {
             this.ctx.beginPath();
             this.ctx.moveTo(0, i * GRID_IN_PX);
-            this.ctx.lineTo(this.widthPx, i * GRID_IN_PX);
+            this.ctx.lineTo(this.state.widthPx, i * GRID_IN_PX);
             this.ctx.stroke();
         }
     }
@@ -111,23 +114,26 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
     componentDidUpdate(prevProps: Readonly<DungeonMapStateProps & DungeonMapDispatchProps>,
                        prevState: Readonly<{}>, snapshot?: any): void {
         this.modeHandler = this.modeHandlerMapping[this.props.state.toolMode];
+        if (prevProps.state.map.properties.width !== this.props.state.map.properties.width ||
+            prevProps.state.map.properties.height !== this.props.state.map.properties.height) {
+            this.setState({
+                widthPx: this.props.state.map.properties.width * GRID_IN_PX,
+                heightPx: this.props.state.map.properties.height * GRID_IN_PX
+            })
+        }
     }
 
     render() {
         return <div className="DungeonMap">
             <canvas ref={this.canvasRef}
-                    width={this.widthPx + "px"} height={this.heightPx + "px"}
+                    width={this.state.widthPx + "px"} height={this.state.heightPx + "px"}
                     onMouseMove={this.onMouseMove} onClick={this.onMapClicked}/>
         </div>
     }
 }
 
-function mapStateToProps(state: DesignerState, ownProps): DungeonMapStateProps {
-    return {
-        width: ownProps.width,
-        height: ownProps.height,
-        state: state
-    }
+function mapStateToProps(state: DesignerState): DungeonMapStateProps {
+    return {state: state};
 }
 
 function mapStateToDispatch(dispatch: Dispatch): DungeonMapDispatchProps {
@@ -139,7 +145,7 @@ function mapStateToDispatch(dispatch: Dispatch): DungeonMapDispatchProps {
         onSelection: (selected: SelectedState) =>
             dispatch({type: SELECT_OBJECT, payload: selected})
 
-    }
+    };
 }
 
 export default connect(mapStateToProps, mapStateToDispatch)(DungeonMap);

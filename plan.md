@@ -10,10 +10,9 @@
 ~~Phase 3~~ - Doors / Openings
 * Openings can be on walls of existing rooms
 
-Phase 4 - Selection
-* ~~Picking works~~
-* ~~Map Properties can be changed / fleshed out~~
-* Type of opening can be specified i.e. Door, Open Entrance, etc... 
+~~Phase 4 - Selection~~
+* Picking works
+* Map Properties can be changed / fleshed out 
 
 Phase 5 - Save and Load
 * Map can be saved and loaded

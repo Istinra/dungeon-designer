@@ -15,7 +15,9 @@ const initialState: DesignerState = {
         properties: {
             type: ObjectType.MAP,
             gridLineColor: "#22222f",
-            backgroundColor: "#000000"
+            backgroundColor: "#000000",
+            width: 20,
+            height: 20
         },
         rooms: [],
         doors: []

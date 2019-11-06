@@ -44,6 +44,10 @@ class PropertiesPanel extends React.Component<PropertiesPanelProps & PropertiesP
                             value={map.gridLineColor} type="color" onChange={this.onChange}/>
             <InputComponent id="map_bg_colour" name="backgroundColor" label="Background Colour"
                             value={map.backgroundColor} type="color" onChange={this.onChange}/>
+            <InputComponent id="map_grid_width" name="width" label="Grid Width"
+                            value={map.width} type="number" onChange={this.onChange}/>
+            <InputComponent id="map_grid_height" name="height" label="Grid Height"
+                            value={map.height} type="number" onChange={this.onChange}/>
         </>
     }
 
