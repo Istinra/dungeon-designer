@@ -5,6 +5,7 @@ import {Dispatch} from "redux";
 import {connect} from 'react-redux';
 import {InputComponent} from "../components/InputComponents";
 import {UPDATE_DOOR_PROPERTIES, UPDATE_MAP_PROPERTIES, UPDATE_ROOM_PROPERTIES} from "../actions";
+import ImportExportComponent from "./ImportExportComponent";
 
 type PropertiesPanelTypes = Room | Door | MapPropertiesState;
 
@@ -48,6 +49,7 @@ class PropertiesPanel extends React.Component<PropertiesPanelProps & PropertiesP
                             value={map.width} type="number" onChange={this.onChange}/>
             <InputComponent id="map_grid_height" name="height" label="Grid Height"
                             value={map.height} type="number" onChange={this.onChange}/>
+            <ImportExportComponent/>
         </>
     }
 

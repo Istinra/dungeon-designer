@@ -35,6 +35,7 @@ export interface MapState {
 
 export interface MapPropertiesState {
     type: typeof ObjectType.MAP,
+    name: string;
     gridLineColor: string;
     backgroundColor: string;
     width,

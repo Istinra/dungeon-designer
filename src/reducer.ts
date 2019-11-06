@@ -3,7 +3,7 @@ import {
     CHANGE_MODE_ACTION,
     CREATE_DOOR_ACTION,
     CREATE_ROOM_ACTION,
-    DesignerActionTypes,
+    DesignerActionTypes, IMPORT_MAP,
     SELECT_OBJECT,
     UPDATE_DOOR_PROPERTIES,
     UPDATE_MAP_PROPERTIES,
@@ -13,6 +13,7 @@ import {
 const initialState: DesignerState = {
     map: {
         properties: {
+            name: "#1 Dungeon",
             type: ObjectType.MAP,
             gridLineColor: "#22222f",
             backgroundColor: "#000000",
@@ -91,6 +92,9 @@ export function designerReducer(state: DesignerState = initialState, action: Des
         }
         case SELECT_OBJECT: {
             return {...state, selected: action.payload};
+        }
+        case IMPORT_MAP: {
+            return {...state, map: action.payload};
         }
     }
     return state;
