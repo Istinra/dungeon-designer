@@ -1,10 +1,13 @@
-.InputComponent {
-    display: block;
-    margin: 5px;
-    text-align: center;
+.InputComponent-label {
+    width: 135px;
+    display: inline-block;
+    text-align: right;
+    margin: 5px
 }
 
-.InputComponent-control {
-    width: 180px;
+.InputComponent-input {
+    width: 135px;
     display: inline-block;
+    margin: 5px
 }
+

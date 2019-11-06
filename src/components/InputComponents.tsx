@@ -29,13 +29,15 @@ export class InputComponent extends React.Component<InputProps, InputState> {
     }
 
     render() {
-        return <label htmlFor={this.props.id} className="InputComponent">
-            {this.props.label}:
-            <div className="InputComponent-control">
+        return <div>
+            <label htmlFor={this.props.id} className="InputComponent-label">
+                {this.props.label}:
+            </label>
+            <div className="InputComponent-input">
                 <input id={this.props.id} type={this.props.type} value={this.state.value}
                        onChange={this.onChange} onBlur={this.onBlur}/>
             </div>
-        </label>;
+        </div>;
     }
 
     private onChange = (event: React.FormEvent<HTMLInputElement>) => {

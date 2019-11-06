@@ -38,17 +38,17 @@ class PropertiesPanel extends React.Component<PropertiesPanelProps & PropertiesP
     }
 
     private mapProps(map: MapPropertiesState) {
-        return <span>
+        return <>
             <h3>Map Properties</h3>
             <InputComponent id="map_grid_colour" name="gridLineColor" label="Grid Colour"
                             value={map.gridLineColor} type="color" onChange={this.onChange}/>
             <InputComponent id="map_bg_colour" name="backgroundColor" label="Background Colour"
                             value={map.backgroundColor} type="color" onChange={this.onChange}/>
-        </span>
+        </>
     }
 
     private roomProps(room: Room) {
-        return <span>
+        return <>
             <h3>Room Properties</h3>
             <InputComponent id="prop_room_name" name="name" label="Name"
                             value={room.name} type="text" onChange={this.onChange}/>
@@ -56,15 +56,15 @@ class PropertiesPanel extends React.Component<PropertiesPanelProps & PropertiesP
                             value={room.color} type="color" onChange={this.onChange}/>
             <InputComponent id="prop_room_colour" name="wallThickness" label="Wall Thickness"
                             value={room.wallThickness} type="number" onChange={this.onChange}/>
-        </span>
+        </>
     }
 
     private doorProps(door: Door) {
-        return <span>
+        return <>
             <h3>Door Properties</h3>
             <InputComponent id="prop_room_colour" name="color" label="Color"
                             value={door.color} type="color" onChange={this.onChange}/>
-        </span>
+        </>
     }
 
     private onChange = (name: string, value: string) => {
