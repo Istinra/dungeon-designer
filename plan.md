@@ -14,9 +14,15 @@
 * Picking works
 * Map Properties can be changed / fleshed out 
 
-Phase 5 - Save and Load
+~~Phase 5 - Save and Load~~
 * Map can be saved and loaded
+
+Phase 6 - Props
+* Pre-defined props can be placed on the map
 * MVP complete!
+
+Phase 7 - Layers
+* Maps can have multiple layers/floors
 
 Phase N - ???
 * 3d Preview

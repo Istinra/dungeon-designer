@@ -1,13 +1,10 @@
 .InputComponent-label {
-    width: 135px;
-    display: inline-block;
-    text-align: right;
-    margin: 5px
+    margin: 10px 0 10px 0;
+    display: block;
 }
 
 .InputComponent-input {
-    width: 135px;
-    display: inline-block;
-    margin: 5px
+    margin: 2px 0 2px 0;
+    display: block;
 }
 

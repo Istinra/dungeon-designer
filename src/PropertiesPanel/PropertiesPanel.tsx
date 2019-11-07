@@ -39,7 +39,7 @@ class PropertiesPanel extends React.Component<PropertiesPanelProps & PropertiesP
     }
 
     private mapProps(map: MapPropertiesState) {
-        return <>
+        return <section>
             <h3>Map Properties</h3>
             <InputComponent id="map_grid_colour" name="gridLineColor" label="Grid Colour"
                             value={map.gridLineColor} type="color" onChange={this.onChange}/>
@@ -50,11 +50,11 @@ class PropertiesPanel extends React.Component<PropertiesPanelProps & PropertiesP
             <InputComponent id="map_grid_height" name="height" label="Grid Height"
                             value={map.height} type="number" onChange={this.onChange}/>
             <ImportExportComponent/>
-        </>
+        </section>
     }
 
     private roomProps(room: Room) {
-        return <>
+        return <section>
             <h3>Room Properties</h3>
             <InputComponent id="prop_room_name" name="name" label="Name"
                             value={room.name} type="text" onChange={this.onChange}/>
@@ -62,15 +62,15 @@ class PropertiesPanel extends React.Component<PropertiesPanelProps & PropertiesP
                             value={room.color} type="color" onChange={this.onChange}/>
             <InputComponent id="prop_room_colour" name="wallThickness" label="Wall Thickness"
                             value={room.wallThickness} type="number" onChange={this.onChange}/>
-        </>
+        </section>
     }
 
     private doorProps(door: Door) {
-        return <>
+        return <section>
             <h3>Door Properties</h3>
             <InputComponent id="prop_room_colour" name="color" label="Color"
                             value={door.color} type="color" onChange={this.onChange}/>
-        </>
+        </section>
     }
 
     private onChange = (name: string, value: string) => {
