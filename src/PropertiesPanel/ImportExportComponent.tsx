@@ -11,8 +11,11 @@ interface ImportExportDispatch {
 function ImportExportComponent(props: MapState & ImportExportDispatch) {
     return <div>
         <button type="button" onClick={() => downloadObjectAsJson(props, props.properties.name)}>Export</button>
-        Input:
-        <input type="file" onChange={(event) => handleUpload(event.target.files, props.onImportMap)}/>
+        <button type="button" onClick={() => document.getElementById("import_file_upload").click()}>
+            Import
+        </button>
+        <input id="import_file_upload"
+               type="file" onChange={(event) => handleUpload(event.target.files, props.onImportMap)} hidden/>
     </div>
 }
 
@@ -21,8 +24,8 @@ function handleUpload(files: FileList, onImportMap: (map: MapState) => void) {
     const file = files.item(0);
     let reader = new FileReader();
     reader.onload = (event: ProgressEvent) => {
-        // @ts-ignore
-        onImportMap.apply(JSON.parse(event.target.result));
+        // @ts-ignore ts binding don't seem to include the result
+        onImportMap.call(this, JSON.parse(event.target.result));
     };
     reader.readAsText(file);
 }
