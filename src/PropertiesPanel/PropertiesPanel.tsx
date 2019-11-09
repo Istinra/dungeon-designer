@@ -1,13 +1,18 @@
 import * as React from "react";
 import "./PropertiesPanel.scss"
-import {DesignerState, Door, MapPropertiesState, ObjectType, Room, ToolMode} from "../state";
+import {DesignerState, Door, MapPropertiesState, ObjectType, Prop, Room, ToolMode} from "../state";
 import {Dispatch} from "redux";
 import {connect} from 'react-redux';
 import {InputComponent} from "../components/InputComponents";
-import {UPDATE_DOOR_PROPERTIES, UPDATE_MAP_PROPERTIES, UPDATE_ROOM_PROPERTIES} from "../actions";
+import {
+    UPDATE_DOOR_PROPERTIES,
+    UPDATE_MAP_PROPERTIES,
+    UPDATE_PROP_PROPERTIES,
+    UPDATE_ROOM_PROPERTIES
+} from "../actions";
 import ImportExportComponent from "./ImportExportComponent";
 
-type PropertiesPanelTypes = Room | Door | MapPropertiesState;
+type PropertiesPanelTypes = Room | Door | Prop | MapPropertiesState;
 
 interface PropertiesPanelProps {
     selected: PropertiesPanelTypes;
@@ -28,6 +33,9 @@ class PropertiesPanel extends React.Component<PropertiesPanelProps & PropertiesP
                     break;
                 case ObjectType.DOOR:
                     selectedContent = this.doorProps(this.props.selected);
+                    break;
+                case ObjectType.PROP:
+                    selectedContent = this.propProps(this.props.selected);
                     break;
                 default:
                     selectedContent = this.mapProps(this.props.selected);
@@ -73,6 +81,16 @@ class PropertiesPanel extends React.Component<PropertiesPanelProps & PropertiesP
         </section>
     }
 
+    private propProps(prop: Prop) {
+        return <section>
+            <h3>Prop Properties</h3>
+            <InputComponent id="prop_prop_name" name="name" label="Name"
+                            value={prop.name} type="text" onChange={this.onChange}/>
+            <InputComponent id="prop_prop_colour" name="color" label="Color"
+                            value={prop.color} type="color" onChange={this.onChange}/>
+        </section>
+    }
+
     private onChange = (name: string, value: string) => {
         this.props.onUpdate({...this.props.selected, [name]: value});
     }
@@ -87,6 +105,8 @@ function mapStateToProps(state: DesignerState): PropertiesPanelProps {
                         return {selected: state.map.rooms[state.selected.index]};
                     case ObjectType.DOOR:
                         return {selected: state.map.doors[state.selected.index]};
+                    case ObjectType.PROP:
+                        return {selected: state.map.props[state.selected.index]};
                 }
             }
             break;
@@ -94,7 +114,8 @@ function mapStateToProps(state: DesignerState): PropertiesPanelProps {
             return {selected: state.pendingObjects.room};
         case ToolMode.DOOR:
             return {selected: state.pendingObjects.door};
-
+        case ToolMode.PROP:
+            return {selected: state.pendingObjects.prop};
     }
     return {selected: state.map.properties};
 }
@@ -109,6 +130,9 @@ function mapStateToDispatch(dispatch: Dispatch): PropertiesPanelDispatch {
                     break;
                 case ObjectType.DOOR:
                     type = UPDATE_DOOR_PROPERTIES;
+                    break;
+                case ObjectType.PROP:
+                    type = UPDATE_PROP_PROPERTIES;
                     break;
                 default:
                     type = UPDATE_MAP_PROPERTIES;

@@ -30,3 +30,9 @@ export function drawBlock(from: Point, to: Point, normalVec: Point, ctx: CanvasR
     ctx.lineTo(to.x * GRID_IN_PX - x, to.y * GRID_IN_PX - y);
     ctx.fill();
 }
+
+export function drawProp(location: Point, ctx: CanvasRenderingContext2D) {
+    //TODO render props differently
+    console.log(location);
+    drawPoint(location, ctx);
+}

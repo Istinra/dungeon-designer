@@ -2,13 +2,14 @@ import React, {MouseEvent} from 'react';
 import {DesignerState, Point, SelectedState, ToolMode} from "../state";
 import {connect} from 'react-redux';
 import {Dispatch} from "redux";
-import {CREATE_DOOR_ACTION, CREATE_ROOM_ACTION, SELECT_OBJECT} from "../actions";
+import {CREATE_DOOR_ACTION, CREATE_PROP_ACTION, CREATE_ROOM_ACTION, SELECT_OBJECT} from "../actions";
 import "./DungeonMap.css"
-import {drawBlock, drawLine, GRID_IN_PX} from "./DungonMapConstants";
+import {drawBlock, drawLine, drawProp, GRID_IN_PX} from "./DungonMapConstants";
 import {MapModeHandler} from "./MapModeHandler";
 import {RoomMapModeHandler} from "./RoomMapModeHandler";
 import {DoorMapModeHandler} from "./DoorMapModeHandler";
 import {SelectMapModeHandler} from "./SelectMapModeHandler";
+import {PropMapModeHandler} from "./PropMapModeHandler";
 
 interface DungeonMapStateProps {
     state: DesignerState
@@ -18,6 +19,8 @@ interface DungeonMapDispatchProps {
     roomCreated(points: Point[]): void;
 
     doorCreated(points: { from: Point, to: Point, normalVec: Point }): void;
+
+    propCreated(location: Point): void;
 
     onSelection(selected: SelectedState): void;
 }
@@ -45,7 +48,8 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
         this.modeHandlerMapping = {
             [ToolMode.SELECT]: new SelectMapModeHandler(props.onSelection),
             [ToolMode.DOOR]: new DoorMapModeHandler(props.doorCreated),
-            [ToolMode.ROOM]: new RoomMapModeHandler(props.roomCreated)
+            [ToolMode.ROOM]: new RoomMapModeHandler(props.roomCreated),
+            [ToolMode.PROP]: new PropMapModeHandler(props.propCreated)
         };
         this.modeHandler = this.modeHandlerMapping[this.props.state.toolMode];
     }
@@ -59,6 +63,7 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
         this.drawGrid();
         this.drawRooms();
         this.drawDoors();
+        this.drawProps();
         this.modeHandler.draw(this.props.state.map, this.ctx);
         requestAnimationFrame(this.draw)
     };
@@ -97,6 +102,14 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
             this.ctx.strokeStyle = door.color;
             this.ctx.fillStyle = door.color;
             drawBlock(door.from, door.to, door.normalVec, this.ctx);
+        }
+    }
+
+    private drawProps(): void {
+        for (let prop of this.props.state.map.props) {
+            this.ctx.strokeStyle = prop.color;
+            this.ctx.fillStyle = prop.color;
+            drawProp(prop.location, this.ctx);
         }
     }
 
@@ -142,6 +155,8 @@ function mapStateToDispatch(dispatch: Dispatch): DungeonMapDispatchProps {
             dispatch({type: CREATE_ROOM_ACTION, payload: points}),
         doorCreated: (points: { from: Point, to: Point }) =>
             dispatch({type: CREATE_DOOR_ACTION, payload: points}),
+        propCreated: (location: Point) =>
+            dispatch({type: CREATE_PROP_ACTION, payload: {location: location}}),
         onSelection: (selected: SelectedState) =>
             dispatch({type: SELECT_OBJECT, payload: selected})
 

@@ -1,11 +1,13 @@
-import {Door, MapPropertiesState, MapState, Point, Room, SelectedState, ToolMode} from "./state";
+import {Door, MapPropertiesState, MapState, Point, Prop, Room, SelectedState, ToolMode} from "./state";
 
 export const CREATE_ROOM_ACTION = "CREATE ROOM";
 export const CREATE_DOOR_ACTION = "CREATE DOOR";
+export const CREATE_PROP_ACTION = "CREATE PROP";
 export const CHANGE_MODE_ACTION = "CHANGE MODE";
 export const UPDATE_MAP_PROPERTIES = "UPDATE MAP PROPERTIES";
 export const UPDATE_ROOM_PROPERTIES = "UPDATE ROOM PROPERTIES";
 export const UPDATE_DOOR_PROPERTIES = "UPDATE DOOR PROPERTIES";
+export const UPDATE_PROP_PROPERTIES = "UPDATE PROP PROPERTIES";
 export const SELECT_OBJECT = "SELECT OBJECT";
 export const IMPORT_MAP = "IMPORT MAP";
 
@@ -17,6 +19,11 @@ export interface CreateRoomAction {
 export interface CreateDoorAction {
     type: typeof CREATE_DOOR_ACTION;
     payload: { from: Point, to: Point };
+}
+
+export interface CreatePropAction {
+    type: typeof CREATE_PROP_ACTION;
+    payload: { location: Point };
 }
 
 export interface ChangeModeAction {
@@ -39,6 +46,11 @@ export interface UpdateDoorPropertiesAction {
     payload: Door;
 }
 
+export interface UpdatePropPropertiesAction {
+    type: typeof UPDATE_PROP_PROPERTIES;
+    payload: Prop;
+}
+
 export interface SelectObjectAction {
     type: typeof SELECT_OBJECT;
     payload: SelectedState;
@@ -51,9 +63,11 @@ export interface ImportMapAction {
 
 export type DesignerActionTypes = CreateRoomAction |
     CreateDoorAction |
+    CreatePropAction |
     ChangeModeAction |
     UpdateMapPropertiesAction |
     UpdateRoomPropertiesAction |
     UpdateDoorPropertiesAction |
+    UpdatePropPropertiesAction |
     SelectObjectAction |
     ImportMapAction;

@@ -8,18 +8,21 @@ export interface DesignerState {
 export enum ToolMode {
     SELECT,
     ROOM,
-    DOOR
+    DOOR,
+    PROP
 }
 
 export enum ObjectType {
     MAP,
     ROOM,
-    DOOR
+    DOOR,
+    PROP
 }
 
 export interface PropertiesPanelState {
     room: Room;
     door: Door;
+    prop: Prop;
 }
 
 export interface SelectedState {
@@ -31,6 +34,7 @@ export interface MapState {
     properties: MapPropertiesState;
     rooms: Room[];
     doors: Door[];
+    props: Prop[];
 }
 
 export interface MapPropertiesState {
@@ -60,5 +64,12 @@ export interface Door {
     from: Point;
     to: Point;
     normalVec: Point;
+    color: string;
+}
+
+export interface Prop {
+    type: typeof  ObjectType.PROP,
+    name: string;
+    location: Point;
     color: string;
 }

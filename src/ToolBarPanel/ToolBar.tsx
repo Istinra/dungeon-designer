@@ -22,6 +22,8 @@ function ToolBar(props: ToolBarStateProps & ToolBarDispatchProps) {
                        onModeChanged={props.onModeChanged}/>
         <ToolBarButton name="Door" mode={ToolMode.DOOR} activeMode={props.activeMode}
                        onModeChanged={props.onModeChanged}/>
+       <ToolBarButton name="Prop" mode={ToolMode.PROP} activeMode={props.activeMode}
+                      onModeChanged={props.onModeChanged}/>
     </div>
 }
 

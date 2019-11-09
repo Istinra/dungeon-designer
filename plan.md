@@ -28,3 +28,8 @@ Phase N - ???
 * 3d Preview
 * Real time collaboration
 * Random Generation
+
+Improvements + Features
+* Clean up duplicate code in reducers and actions
+* Drag select
+* Zoom level

@@ -2,11 +2,14 @@ import {DesignerState, ObjectType, ToolMode} from "./state";
 import {
     CHANGE_MODE_ACTION,
     CREATE_DOOR_ACTION,
+    CREATE_PROP_ACTION,
     CREATE_ROOM_ACTION,
-    DesignerActionTypes, IMPORT_MAP,
+    DesignerActionTypes,
+    IMPORT_MAP,
     SELECT_OBJECT,
     UPDATE_DOOR_PROPERTIES,
     UPDATE_MAP_PROPERTIES,
+    UPDATE_PROP_PROPERTIES,
     UPDATE_ROOM_PROPERTIES,
 } from "./actions";
 
@@ -21,7 +24,8 @@ const initialState: DesignerState = {
             height: 20
         },
         rooms: [],
-        doors: []
+        doors: [],
+        props: []
     },
     toolMode: ToolMode.ROOM,
     selected: {
@@ -30,7 +34,8 @@ const initialState: DesignerState = {
     },
     pendingObjects: {
         room: {points: undefined, color: "#FF4444", name: "", type: ObjectType.ROOM, wallThickness: 2},
-        door: {from: undefined, to: undefined, normalVec: undefined, color: "#FFFF77", type: ObjectType.DOOR}
+        door: {from: undefined, to: undefined, normalVec: undefined, color: "#FFFF77", type: ObjectType.DOOR},
+        prop: {type: ObjectType.PROP, name: "", color: "#00FFFF", location: undefined}
     }
 };
 
@@ -48,6 +53,13 @@ export function designerReducer(state: DesignerState = initialState, action: Des
                 ...state,
                 map: {
                     ...state.map, doors: [...state.map.doors, {...state.pendingObjects.door, ...action.payload}]
+                }
+            };
+        case CREATE_PROP_ACTION:
+            return {
+                ...state,
+                map: {
+                    ...state.map, props: [...state.map.props, {...state.pendingObjects.prop, ...action.payload}]
                 }
             };
         case CHANGE_MODE_ACTION:
@@ -87,6 +99,22 @@ export function designerReducer(state: DesignerState = initialState, action: Des
                 return {
                     ...state,
                     pendingObjects: {...state.pendingObjects, door: action.payload}
+                };
+            }
+        }
+        case UPDATE_PROP_PROPERTIES: {
+            if (state.toolMode === ToolMode.SELECT) {
+                return {
+                    ...state,
+                    map: {
+                        ...state.map,
+                        props: replaceAt(state.map.props, state.selected.index, action.payload)
+                    }
+                };
+            } else {
+                return {
+                    ...state,
+                    pendingObjects: {...state.pendingObjects, prop: action.payload}
                 };
             }
         }
