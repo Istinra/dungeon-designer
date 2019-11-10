@@ -61,6 +61,7 @@ export interface Room {
 
 export interface Door {
     type: typeof ObjectType.DOOR,
+    name: string;
     from: Point;
     to: Point;
     normalVec: Point;

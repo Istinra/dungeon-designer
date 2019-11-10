@@ -34,7 +34,7 @@ const initialState: DesignerState = {
     },
     pendingObjects: {
         room: {points: undefined, color: "#FF4444", name: "", type: ObjectType.ROOM, wallThickness: 2},
-        door: {from: undefined, to: undefined, normalVec: undefined, color: "#FFFF77", type: ObjectType.DOOR},
+        door: {from: undefined, to: undefined, normalVec: undefined, name: "", color: "#FFFF77", type: ObjectType.DOOR},
         prop: {type: ObjectType.PROP, name: "", color: "#00FFFF", location: undefined}
     }
 };

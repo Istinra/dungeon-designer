@@ -4,7 +4,7 @@ import {connect} from 'react-redux';
 import {Dispatch} from "redux";
 import {CREATE_DOOR_ACTION, CREATE_PROP_ACTION, CREATE_ROOM_ACTION, SELECT_OBJECT} from "../actions";
 import "./DungeonMap.css"
-import {drawBlock, drawLine, drawProp, GRID_IN_PX} from "./DungonMapConstants";
+import {drawBlock, drawProp, drawRoom, GRID_IN_PX} from "./DungonMapConstants";
 import {MapModeHandler} from "./MapModeHandler";
 import {RoomMapModeHandler} from "./RoomMapModeHandler";
 import {DoorMapModeHandler} from "./DoorMapModeHandler";
@@ -90,10 +90,7 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
         for (let room of this.props.state.map.rooms) {
             this.ctx.strokeStyle = room.color;
             this.ctx.fillStyle = room.color;
-            for (let i = 0; i < room.points.length - 1; i++) {
-                drawLine(room.points[i], room.points[i + 1], this.ctx, room.wallThickness);
-            }
-            drawLine(room.points[room.points.length - 1], room.points[0], this.ctx, room.wallThickness);
+            drawRoom(room.points, room.wallThickness, this.ctx, room.name);
         }
     }
 
@@ -101,7 +98,7 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
         for (let door of this.props.state.map.doors) {
             this.ctx.strokeStyle = door.color;
             this.ctx.fillStyle = door.color;
-            drawBlock(door.from, door.to, door.normalVec, this.ctx);
+            drawBlock(door.from, door.to, door.normalVec, this.ctx, door.name);
         }
     }
 
@@ -109,7 +106,7 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
         for (let prop of this.props.state.map.props) {
             this.ctx.strokeStyle = prop.color;
             this.ctx.fillStyle = prop.color;
-            drawProp(prop.location, this.ctx);
+            drawProp(prop.location, this.ctx, prop.name);
         }
     }
 
