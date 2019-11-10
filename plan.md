@@ -21,18 +21,23 @@
 * Basic props can be placed on the map
 * MVP complete!
 
-Phase 7 - Labels
+~~Phase 7 - Labels~~
 * Objects on the map are labelled
 
-Phase 8 - Layers
-* Maps can have multiple layers/floors
+Phase 8 - Zoom Levels
+* Map can be zoomed in or out 
 
-Phase N - ???
-* 3d Preview
-* Real time collaboration
-* Random Generation
-
-Improvements + Features
-* Clean up duplicate code in reducers and actions
-* Drag select
-* Zoom level
+Todo for Phase N - (Effort - S / M / L)
+* High Priority
+    * [M] Adjusting existing points
+    * [L] Textured lines / surfaces
+    * [M] Remove (Complicated by doors not being attached to rooms)
+* Medium Priority
+    * [S] Undo / Redo
+    * [S] Clean up duplicate code in reducers and actions
+    * [M] Multi/Drag select
+* Low Priority
+    * [M] Maps can have multiple layers/floors
+    * [L] 3d Preview
+    * [L] Real time collaboration
+    * [M] Random Generation
