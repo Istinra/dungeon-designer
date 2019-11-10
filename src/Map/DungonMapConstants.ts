@@ -32,7 +32,15 @@ export function drawBlock(from: Point, to: Point, normalVec: Point, ctx: CanvasR
 }
 
 export function drawProp(location: Point, ctx: CanvasRenderingContext2D) {
-    //TODO render props differently
-    console.log(location);
-    drawPoint(location, ctx);
+    const gridX = Math.floor(location.x), gridY = Math.floor(location.y);
+
+    ctx.beginPath();
+    ctx.moveTo((gridX + 0.2) * GRID_IN_PX, (gridY + 0.2) * GRID_IN_PX);
+    ctx.lineTo((gridX + 0.8) * GRID_IN_PX, (gridY + 0.2) * GRID_IN_PX);
+    ctx.lineTo((gridX + 0.2) * GRID_IN_PX, (gridY + 0.8) * GRID_IN_PX);
+    ctx.lineTo((gridX + 0.8) * GRID_IN_PX, (gridY + 0.8) * GRID_IN_PX);
+    ctx.lineTo((gridX + 0.2) * GRID_IN_PX, (gridY + 0.2) * GRID_IN_PX);
+    ctx.stroke();
+
+
 }

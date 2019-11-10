@@ -21,7 +21,10 @@ Phase 6 - Props
 * Pre-defined props can be placed on the map
 * MVP complete!
 
-Phase 7 - Layers
+Phase 7 - Labels
+* Objects on the map are labelled
+
+Phase 8 - Layers
 * Maps can have multiple layers/floors
 
 Phase N - ???

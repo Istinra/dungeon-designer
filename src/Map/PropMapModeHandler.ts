@@ -4,27 +4,27 @@ import {drawProp, GRID_IN_PX} from "./DungonMapConstants";
 
 export class PropMapModeHandler implements MapModeHandler {
 
-    private mouseGridPos: Point;
+    private mousePos: Point;
 
     constructor(private propCreated: (location: Point) => void) {
     }
 
     onMouseMove(state: MapState, point: Point): void {
-        this.mouseGridPos = {
+        this.mousePos = {
             x: point.x / GRID_IN_PX,
             y: point.y / GRID_IN_PX
         };
     }
 
     onMapClicked(state: MapState): void {
-        this.propCreated(this.mouseGridPos);
+        this.propCreated(this.mousePos);
     }
 
     draw(state: MapState, ctx: CanvasRenderingContext2D): void {
-        if (this.mouseGridPos) {
+        if (this.mousePos) {
             ctx.strokeStyle = "#00FFFF";
             ctx.fillStyle = "#00FFFF";
-            drawProp(this.mouseGridPos, ctx);
+            drawProp(this.mousePos, ctx);
         }
     }
 

@@ -1,5 +1,5 @@
 import {MapModeHandler} from "./MapModeHandler";
-import {Door, MapState, ObjectType, Point, Room, SelectedState} from "../state";
+import {Door, MapState, ObjectType, Point, Prop, Room, SelectedState} from "../state";
 import {GRID_IN_PX} from "./DungonMapConstants";
 
 export class SelectMapModeHandler implements MapModeHandler {
@@ -21,6 +21,13 @@ export class SelectMapModeHandler implements MapModeHandler {
             const door = state.doors[i];
             if (this.testDoor(door)) {
                 this.onSelection({type: ObjectType.DOOR, index: i});
+                return;
+            }
+        }
+        for (let i = 0; i < state.props.length; i++) {
+            const prop = state.props[i];
+            if (this.testProp(prop)) {
+                this.onSelection({type: ObjectType.PROP, index: i});
                 return;
             }
         }
@@ -59,6 +66,12 @@ export class SelectMapModeHandler implements MapModeHandler {
         }
 
         return count % 2 === 1;
+    }
+    
+    private testProp(prop: Prop): boolean {
+        const gridX = Math.floor(prop.location.x), gridY = Math.floor(prop.location.y);
+        return this.mousePoint.x > gridX && this.mousePoint.x < gridX + 1 &&
+            this.mousePoint.y > gridY && this.mousePoint.y < gridY + 1;
     }
 
     private testRoom(room: Room): boolean {
