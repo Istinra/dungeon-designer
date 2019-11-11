@@ -126,7 +126,8 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
                        prevState: Readonly<{}>, snapshot?: any): void {
         this.modeHandler = this.modeHandlerMapping[this.props.state.toolMode];
         if (prevProps.state.map.properties.width !== this.props.state.map.properties.width ||
-            prevProps.state.map.properties.height !== this.props.state.map.properties.height) {
+            prevProps.state.map.properties.height !== this.props.state.map.properties.height ||
+            prevProps.state.scale !== this.props.state.scale) {
             this.setState({
                 widthPx: this.props.state.map.properties.width * this.props.state.scale,
                 heightPx: this.props.state.map.properties.height * this.props.state.scale
