@@ -1,6 +1,7 @@
 import {DesignerState, ObjectType, ToolMode} from "./state";
 import {
     CHANGE_MODE_ACTION,
+    CHANGE_ZOOM_LEVEL,
     CREATE_DOOR_ACTION,
     CREATE_PROP_ACTION,
     CREATE_ROOM_ACTION,
@@ -36,7 +37,8 @@ const initialState: DesignerState = {
         room: {points: undefined, color: "#FF4444", name: "", type: ObjectType.ROOM, wallThickness: 2},
         door: {from: undefined, to: undefined, normalVec: undefined, name: "", color: "#FFFF77", type: ObjectType.DOOR},
         prop: {type: ObjectType.PROP, name: "", color: "#00FFFF", location: undefined}
-    }
+    },
+    scale: 40
 };
 
 export function designerReducer(state: DesignerState = initialState, action: DesignerActionTypes): DesignerState {
@@ -123,6 +125,9 @@ export function designerReducer(state: DesignerState = initialState, action: Des
         }
         case IMPORT_MAP: {
             return {...state, map: action.payload};
+        }
+        case CHANGE_ZOOM_LEVEL: {
+            return {...state, scale: action.payload};
         }
     }
     return state;

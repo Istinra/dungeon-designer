@@ -41,3 +41,6 @@ Todo for Phase N - (Effort - S / M / L)
     * [L] 3d Preview
     * [L] Real time collaboration
     * [M] Random Generation
+    
+Notes 
+* Consider porting to WebGL when implementing textures

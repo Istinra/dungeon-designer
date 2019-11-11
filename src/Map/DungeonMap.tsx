@@ -2,9 +2,9 @@ import React, {MouseEvent} from 'react';
 import {DesignerState, Point, SelectedState, ToolMode} from "../state";
 import {connect} from 'react-redux';
 import {Dispatch} from "redux";
-import {CREATE_DOOR_ACTION, CREATE_PROP_ACTION, CREATE_ROOM_ACTION, SELECT_OBJECT} from "../actions";
+import {CHANGE_ZOOM_LEVEL, CREATE_DOOR_ACTION, CREATE_PROP_ACTION, CREATE_ROOM_ACTION, SELECT_OBJECT} from "../actions";
 import "./DungeonMap.css"
-import {drawBlock, drawProp, drawRoom, GRID_IN_PX} from "./DungonMapConstants";
+import {drawBlock, drawProp, drawRoom} from "./DungonMapConstants";
 import {MapModeHandler} from "./MapModeHandler";
 import {RoomMapModeHandler} from "./RoomMapModeHandler";
 import {DoorMapModeHandler} from "./DoorMapModeHandler";
@@ -23,6 +23,8 @@ interface DungeonMapDispatchProps {
     propCreated(location: Point): void;
 
     onSelection(selected: SelectedState): void;
+
+    updateZoomLevel(newScale: number): void;
 }
 
 interface DungeonMapState {
@@ -41,8 +43,8 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
     constructor(props: Readonly<DungeonMapStateProps & DungeonMapDispatchProps>) {
         super(props);
         this.state = {
-            widthPx: this.props.state.map.properties.width * GRID_IN_PX,
-            heightPx: this.props.state.map.properties.height * GRID_IN_PX
+            widthPx: this.props.state.map.properties.width * this.props.state.scale,
+            heightPx: this.props.state.map.properties.height * this.props.state.scale
         };
         this.canvasRef = React.createRef<HTMLCanvasElement>();
         this.modeHandlerMapping = {
@@ -64,7 +66,7 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
         this.drawRooms();
         this.drawDoors();
         this.drawProps();
-        this.modeHandler.draw(this.props.state.map, this.ctx);
+        this.modeHandler.draw(this.props.state.map, this.ctx, this.props.state.scale);
         requestAnimationFrame(this.draw)
     };
 
@@ -74,14 +76,14 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
         this.ctx.strokeStyle = this.props.state.map.properties.gridLineColor;
         for (let i = 0; i <= this.props.state.map.properties.width; i++) {
             this.ctx.beginPath();
-            this.ctx.moveTo(i * GRID_IN_PX, 0);
-            this.ctx.lineTo(i * GRID_IN_PX, this.state.heightPx);
+            this.ctx.moveTo(i * this.props.state.scale, 0);
+            this.ctx.lineTo(i * this.props.state.scale, this.state.heightPx);
             this.ctx.stroke();
         }
         for (let i = 0; i <= this.props.state.map.properties.height; i++) {
             this.ctx.beginPath();
-            this.ctx.moveTo(0, i * GRID_IN_PX);
-            this.ctx.lineTo(this.state.widthPx, i * GRID_IN_PX);
+            this.ctx.moveTo(0, i * this.props.state.scale);
+            this.ctx.lineTo(this.state.widthPx, i * this.props.state.scale);
             this.ctx.stroke();
         }
     }
@@ -90,7 +92,7 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
         for (let room of this.props.state.map.rooms) {
             this.ctx.strokeStyle = room.color;
             this.ctx.fillStyle = room.color;
-            drawRoom(room.points, room.wallThickness, this.ctx, room.name);
+            drawRoom(room.points, room.wallThickness, this.ctx, this.props.state.scale, room.name);
         }
     }
 
@@ -98,7 +100,7 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
         for (let door of this.props.state.map.doors) {
             this.ctx.strokeStyle = door.color;
             this.ctx.fillStyle = door.color;
-            drawBlock(door.from, door.to, door.normalVec, this.ctx, door.name);
+            drawBlock(door.from, door.to, door.normalVec, this.ctx, this.props.state.scale, door.name);
         }
     }
 
@@ -106,20 +108,19 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
         for (let prop of this.props.state.map.props) {
             this.ctx.strokeStyle = prop.color;
             this.ctx.fillStyle = prop.color;
-            drawProp(prop.location, this.ctx, prop.name);
+            drawProp(prop.location, this.ctx, this.props.state.scale, prop.name);
         }
     }
 
     private onMouseMove = (event: MouseEvent) => {
         let x: number = event.clientX - this.canvasRef.current.offsetLeft;
         let y: number = event.clientY - this.canvasRef.current.offsetTop;
-        this.modeHandler.onMouseMove(this.props.state.map, {x: x, y: y});
+        this.modeHandler.onMouseMove(this.props.state.map, {x: x, y: y}, this.props.state.scale);
     };
 
     private onMapClicked = () => {
         this.modeHandler.onMapClicked(this.props.state.map);
     };
-
 
     componentDidUpdate(prevProps: Readonly<DungeonMapStateProps & DungeonMapDispatchProps>,
                        prevState: Readonly<{}>, snapshot?: any): void {
@@ -127,8 +128,8 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
         if (prevProps.state.map.properties.width !== this.props.state.map.properties.width ||
             prevProps.state.map.properties.height !== this.props.state.map.properties.height) {
             this.setState({
-                widthPx: this.props.state.map.properties.width * GRID_IN_PX,
-                heightPx: this.props.state.map.properties.height * GRID_IN_PX
+                widthPx: this.props.state.map.properties.width * this.props.state.scale,
+                heightPx: this.props.state.map.properties.height * this.props.state.scale
             })
         }
     }
@@ -138,7 +139,17 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
             <canvas ref={this.canvasRef}
                     width={this.state.widthPx + "px"} height={this.state.heightPx + "px"}
                     onMouseMove={this.onMouseMove} onClick={this.onMapClicked}/>
+            <div style={{position: "fixed", bottom: 10, left: 10}}>
+                Zoom Level: <br/>
+                <input type="range" style={{direction: "rtl"}} onChange={this.updateZoom}
+                       max="50" min="1" value={this.props.state.scale} step="5"/>
+            </div>
+
         </div>
+    }
+
+    private updateZoom = (event: React.FormEvent<HTMLInputElement>) => {
+        this.props.updateZoomLevel(event.currentTarget.valueAsNumber);
     }
 }
 
@@ -155,8 +166,8 @@ function mapStateToDispatch(dispatch: Dispatch): DungeonMapDispatchProps {
         propCreated: (location: Point) =>
             dispatch({type: CREATE_PROP_ACTION, payload: {location: location}}),
         onSelection: (selected: SelectedState) =>
-            dispatch({type: SELECT_OBJECT, payload: selected})
-
+            dispatch({type: SELECT_OBJECT, payload: selected}),
+        updateZoomLevel: (newScale: null) => dispatch({type: CHANGE_ZOOM_LEVEL, payload: newScale})
     };
 }
 

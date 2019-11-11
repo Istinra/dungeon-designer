@@ -10,6 +10,7 @@ export const UPDATE_DOOR_PROPERTIES = "UPDATE DOOR PROPERTIES";
 export const UPDATE_PROP_PROPERTIES = "UPDATE PROP PROPERTIES";
 export const SELECT_OBJECT = "SELECT OBJECT";
 export const IMPORT_MAP = "IMPORT MAP";
+export const CHANGE_ZOOM_LEVEL = "CHANGE_ZOOM_LEVEL";
 
 export interface CreateRoomAction {
     type: typeof CREATE_ROOM_ACTION;
@@ -61,6 +62,11 @@ export interface ImportMapAction {
     payload: MapState;
 }
 
+export interface ChangeZoomLevel {
+    type: typeof CHANGE_ZOOM_LEVEL;
+    payload: number;
+}
+
 export type DesignerActionTypes = CreateRoomAction |
     CreateDoorAction |
     CreatePropAction |
@@ -70,4 +76,5 @@ export type DesignerActionTypes = CreateRoomAction |
     UpdateDoorPropertiesAction |
     UpdatePropPropertiesAction |
     SelectObjectAction |
-    ImportMapAction;
+    ImportMapAction |
+    ChangeZoomLevel;

@@ -1,5 +1,5 @@
 import {MapState, Point} from "../state";
-import {drawBlock, GRID_IN_PX} from "./DungonMapConstants";
+import {drawBlock} from "./DungonMapConstants";
 import {MapModeHandler} from "./MapModeHandler";
 
 export class DoorMapModeHandler implements MapModeHandler {
@@ -17,8 +17,8 @@ export class DoorMapModeHandler implements MapModeHandler {
         }
     }
 
-    onMouseMove(state: MapState, point: Point): void {
-        point = {x: point.x / GRID_IN_PX, y: point.y / GRID_IN_PX};
+    onMouseMove(state: MapState, point: Point, scale: number): void {
+        point = {x: point.x / scale, y: point.y / scale};
         this.distanceToWall = Number.MAX_SAFE_INTEGER;
         this.pendingDoor = null;
         for (let room of state.rooms) {
@@ -83,11 +83,11 @@ export class DoorMapModeHandler implements MapModeHandler {
         }
     }
 
-    draw(state: MapState, ctx: CanvasRenderingContext2D): void {
+    draw(state: MapState, ctx: CanvasRenderingContext2D, scale: number): void {
         if (this.pendingDoor) {
             ctx.strokeStyle = "yellow";
             ctx.fillStyle = "yellow";
-            drawBlock(this.pendingDoor.from, this.pendingDoor.to, this.pendingDoor.normalVec, ctx);
+            drawBlock(this.pendingDoor.from, this.pendingDoor.to, this.pendingDoor.normalVec, ctx, scale);
         }
     }
 }

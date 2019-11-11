@@ -1,6 +1,5 @@
 import {MapModeHandler} from "./MapModeHandler";
 import {Door, MapState, ObjectType, Point, Prop, Room, SelectedState} from "../state";
-import {GRID_IN_PX} from "./DungonMapConstants";
 
 export class SelectMapModeHandler implements MapModeHandler {
 
@@ -9,8 +8,8 @@ export class SelectMapModeHandler implements MapModeHandler {
     constructor(private onSelection: (selected: SelectedState) => void) {
     }
 
-    onMouseMove(state: MapState, point: Point): void {
-        this.mousePoint = {x: point.x / GRID_IN_PX, y: point.y / GRID_IN_PX};
+    onMouseMove(state: MapState, point: Point, scale: number): void {
+        this.mousePoint = {x: point.x / scale, y: point.y / scale};
     }
 
     draw(state: MapState, ctx: CanvasRenderingContext2D): void {

@@ -3,6 +3,7 @@ export interface DesignerState {
     toolMode: ToolMode;
     selected: SelectedState;
     pendingObjects: PropertiesPanelState;
+    scale: number;
 }
 
 export enum ToolMode {

@@ -1,5 +1,5 @@
 import {MapState, Point} from "../state";
-import {drawLine, GRID_IN_PX} from "./DungonMapConstants";
+import {drawLine} from "./DungonMapConstants";
 import {MapModeHandler} from "./MapModeHandler";
 
 export class RoomMapModeHandler implements MapModeHandler {
@@ -21,21 +21,21 @@ export class RoomMapModeHandler implements MapModeHandler {
         }
     }
 
-    onMouseMove(state: MapState, point: Point): void {
+    onMouseMove(state: MapState, point: Point, scale: number): void {
         this.mouseGridPos = {
-            x: (point.x - point.x % GRID_IN_PX + (point.x % GRID_IN_PX > GRID_IN_PX / 2 ? GRID_IN_PX : 0)) / GRID_IN_PX,
-            y: (point.y - point.y % GRID_IN_PX + (point.y % GRID_IN_PX > GRID_IN_PX / 2 ? GRID_IN_PX : 0)) / GRID_IN_PX
+            x: (point.x - point.x % scale + (point.x % scale > scale / 2 ? scale : 0)) / scale,
+            y: (point.y - point.y % scale + (point.y % scale > scale / 2 ? scale : 0)) / scale
         }
     }
 
-    draw(state: MapState, ctx: CanvasRenderingContext2D): void {
+    draw(state: MapState, ctx: CanvasRenderingContext2D, scale: number): void {
         if (this.activePoints.length > 0) {
             ctx.fillStyle = "green";
             ctx.strokeStyle = "green";
             for (let i = 0; i < this.activePoints.length - 1; i++) {
-                drawLine(this.activePoints[i], this.activePoints[i + 1], ctx);
+                drawLine(this.activePoints[i], this.activePoints[i + 1], ctx, scale);
             }
-            drawLine(this.activePoints[this.activePoints.length - 1], this.mouseGridPos, ctx);
+            drawLine(this.activePoints[this.activePoints.length - 1], this.mouseGridPos, ctx, scale);
         }
     }
 }
