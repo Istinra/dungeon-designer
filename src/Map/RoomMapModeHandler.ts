@@ -1,4 +1,4 @@
-import {MapState, Point} from "../state";
+import {MapState, Point, SelectedState} from "../state";
 import {drawLine} from "./DungonMapConstants";
 import {MapModeHandler} from "./MapModeHandler";
 
@@ -23,12 +23,12 @@ export class RoomMapModeHandler implements MapModeHandler {
 
     onMouseMove(state: MapState, point: Point, scale: number): void {
         this.mouseGridPos = {
-            x: (point.x - point.x % scale + (point.x % scale > scale / 2 ? scale : 0)) / scale,
-            y: (point.y - point.y % scale + (point.y % scale > scale / 2 ? scale : 0)) / scale
+            x: Math.round(point.x / scale),
+            y: Math.round(point.y / scale)
         }
     }
 
-    draw(state: MapState, ctx: CanvasRenderingContext2D, scale: number): void {
+    draw(state: MapState, selected: SelectedState, ctx: CanvasRenderingContext2D, scale: number): void {
         if (this.activePoints.length > 0) {
             ctx.fillStyle = "green";
             ctx.strokeStyle = "green";

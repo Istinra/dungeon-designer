@@ -1,5 +1,5 @@
 import React, {MouseEvent} from 'react';
-import {DesignerState, Point, SelectedState, ToolMode} from "../state";
+import {DesignerState, ObjectType, Point, SelectedState, ToolMode} from "../state";
 import {connect} from 'react-redux';
 import {Dispatch} from "redux";
 import {CHANGE_ZOOM_LEVEL, CREATE_DOOR_ACTION, CREATE_PROP_ACTION, CREATE_ROOM_ACTION, SELECT_OBJECT} from "../actions";
@@ -66,7 +66,7 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
         this.drawRooms();
         this.drawDoors();
         this.drawProps();
-        this.modeHandler.draw(this.props.state.map, this.ctx, this.props.state.scale);
+        this.modeHandler.draw(this.props.state.map, this.props.state.selected, this.ctx, this.props.state.scale);
         requestAnimationFrame(this.draw)
     };
 
@@ -90,6 +90,10 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
 
     private drawRooms() {
         for (let room of this.props.state.map.rooms) {
+            if (this.props.state.selected && this.props.state.selected.type === ObjectType.ROOM &&
+                room === this.props.state.map.rooms[this.props.state.selected.index]) {
+                continue;
+            }
             this.ctx.strokeStyle = room.color;
             this.ctx.fillStyle = room.color;
             drawRoom(room.points, room.wallThickness, this.ctx, this.props.state.scale, room.name);
@@ -122,6 +126,18 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
         this.modeHandler.onMapClicked(this.props.state.map);
     };
 
+    private onMouseDown = () => {
+        if (this.modeHandler.onMouseDown) {
+            this.modeHandler.onMouseDown(this.props.state.map, this.props.state.selected);
+        }
+    };
+
+    private onMouseOut = () => {
+        if (this.modeHandler.onMouseOut) {
+            this.modeHandler.onMouseOut();
+        }
+    };
+
     componentDidUpdate(prevProps: Readonly<DungeonMapStateProps & DungeonMapDispatchProps>,
                        prevState: Readonly<{}>, snapshot?: any): void {
         this.modeHandler = this.modeHandlerMapping[this.props.state.toolMode];
@@ -139,7 +155,8 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
         return <div className="DungeonMap">
             <canvas ref={this.canvasRef}
                     width={this.state.widthPx + "px"} height={this.state.heightPx + "px"}
-                    onMouseMove={this.onMouseMove} onClick={this.onMapClicked}/>
+                    onMouseMove={this.onMouseMove} onClick={this.onMapClicked}
+                    onMouseDown={this.onMouseDown} onMouseOut={this.onMouseOut}/>
             <div style={{position: "fixed", bottom: 10, left: 10}}>
                 Zoom Level: <br/>
                 <input type="range" style={{direction: "rtl"}} onChange={this.updateZoom}

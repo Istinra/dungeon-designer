@@ -24,15 +24,21 @@
 ~~Phase 7 - Labels~~
 * Objects on the map are labelled
 
-Phase 8 - Zoom Levels
+~~Phase 8 - Zoom Levels~~
 * Map can be zoomed in or out 
+
+Phase 9 - Object Translation / Deletion
+* Translate / Delete Rooms
+    * Walls 
+    * Points
+* Translate / Delete Props
+* Delete
 
 Todo for Phase N - (Effort - S / M / L)
 * High Priority
-    * [M] Adjusting existing points
     * [L] Textured lines / surfaces
-    * [M] Remove (Complicated by doors not being attached to rooms)
 * Medium Priority
+    * [S] Improve Doorways
     * [S] Undo / Redo
     * [S] Clean up duplicate code in reducers and actions
     * [M] Multi/Drag select
