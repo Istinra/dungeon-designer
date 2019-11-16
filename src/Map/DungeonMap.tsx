@@ -1,8 +1,15 @@
 import React, {MouseEvent} from 'react';
-import {DesignerState, ObjectType, Point, SelectedState, ToolMode} from "../state";
+import {DesignerState, ObjectType, Point, Room, SelectedState, ToolMode} from "../state";
 import {connect} from 'react-redux';
 import {Dispatch} from "redux";
-import {CHANGE_ZOOM_LEVEL, CREATE_DOOR_ACTION, CREATE_PROP_ACTION, CREATE_ROOM_ACTION, SELECT_OBJECT} from "../actions";
+import {
+    CHANGE_ZOOM_LEVEL,
+    CREATE_DOOR_ACTION,
+    CREATE_PROP_ACTION,
+    CREATE_ROOM_ACTION,
+    SELECT_OBJECT,
+    UPDATE_ROOM_PROPERTIES
+} from "../actions";
 import "./DungeonMap.css"
 import {drawBlock, drawProp, drawRoom} from "./DungonMapConstants";
 import {MapModeHandler} from "./MapModeHandler";
@@ -25,6 +32,8 @@ interface DungeonMapDispatchProps {
     onSelection(selected: SelectedState): void;
 
     updateZoomLevel(newScale: number): void;
+
+    updateRoom(roomUpdate: Room): void;
 }
 
 interface DungeonMapState {
@@ -48,7 +57,7 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
         };
         this.canvasRef = React.createRef<HTMLCanvasElement>();
         this.modeHandlerMapping = {
-            [ToolMode.SELECT]: new SelectMapModeHandler(props.onSelection),
+            [ToolMode.SELECT]: new SelectMapModeHandler(props.onSelection, props.updateRoom),
             [ToolMode.DOOR]: new DoorMapModeHandler(props.doorCreated),
             [ToolMode.ROOM]: new RoomMapModeHandler(props.roomCreated),
             [ToolMode.PROP]: new PropMapModeHandler(props.propCreated)
@@ -123,7 +132,7 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
     };
 
     private onMapClicked = () => {
-        this.modeHandler.onMapClicked(this.props.state.map);
+        this.modeHandler.onMapClicked(this.props.state.map, this.props.state.selected);
     };
 
     private onMouseDown = () => {
@@ -185,7 +194,8 @@ function mapStateToDispatch(dispatch: Dispatch): DungeonMapDispatchProps {
             dispatch({type: CREATE_PROP_ACTION, payload: {location: location}}),
         onSelection: (selected: SelectedState) =>
             dispatch({type: SELECT_OBJECT, payload: selected}),
-        updateZoomLevel: (newScale: null) => dispatch({type: CHANGE_ZOOM_LEVEL, payload: newScale})
+        updateZoomLevel: (newScale: number) => dispatch({type: CHANGE_ZOOM_LEVEL, payload: newScale}),
+        updateRoom: (roomUpdate: Room) => dispatch({type: UPDATE_ROOM_PROPERTIES, payload: roomUpdate})
     };
 }
 

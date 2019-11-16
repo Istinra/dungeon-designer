@@ -16,7 +16,7 @@ export class PropMapModeHandler implements MapModeHandler {
         };
     }
 
-    onMapClicked(state: MapState): void {
+    onMapClicked(state: MapState, selected: SelectedState): void {
         this.propCreated(this.mousePos);
     }
 

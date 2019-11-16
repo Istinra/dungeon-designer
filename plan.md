@@ -35,10 +35,10 @@ Phase 9 - Object Translation / Deletion
 * Delete
 
 Todo for Phase N - (Effort - S / M / L)
-* High Priority
-    * [L] Textured lines / surfaces
+* High Priority (MVP)
+    * [M] Improve Doorways / Openings
 * Medium Priority
-    * [S] Improve Doorways
+    * [L] Textured lines / surfaces
     * [S] Undo / Redo
     * [S] Clean up duplicate code in reducers and actions
     * [M] Multi/Drag select

@@ -11,7 +11,7 @@ export class DoorMapModeHandler implements MapModeHandler {
     public constructor(private doorCreated: { (points: { from: Point, to: Point, normalVec: Point }): void }) {
     }
 
-    onMapClicked(state: MapState): void {
+    onMapClicked(state: MapState, selected: SelectedState): void {
         if (this.pendingDoor) {
             this.doorCreated(this.pendingDoor);
         }

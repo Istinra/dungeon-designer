@@ -8,7 +8,8 @@ export class SelectMapModeHandler implements MapModeHandler {
 
     private dragStart?: Point;
 
-    constructor(private onSelection: (selected: SelectedState) => void) {
+    constructor(private onSelection: (selected: SelectedState) => void,
+                private updateRoom: (roomUpdate: Room) => void) {
     }
 
     draw(state: MapState, selected: SelectedState, ctx: CanvasRenderingContext2D, scale: number): void {
@@ -16,15 +17,7 @@ export class SelectMapModeHandler implements MapModeHandler {
             const room = state.rooms[selected.index];
             let points = room.points;
             if (this.dragStart) {
-                const transform: Point = {
-                    x: this.mousePoint.x - this.dragStart.x,
-                    y: this.mousePoint.y - this.dragStart.y
-                };
-                points = points.map(p => ({
-                        x: Math.round(p.x + transform.x),
-                        y: Math.round(p.y + transform.y)
-                    }
-                ));
+                points = this.translatePoints(points);
             }
             ctx.strokeStyle = room.color;
             ctx.fillStyle = room.color;
@@ -32,9 +25,27 @@ export class SelectMapModeHandler implements MapModeHandler {
         }
     }
 
-    onMapClicked(state: MapState): void {
+    private translatePoints(points): Point[] {
+        const transform: Point = {
+            x: this.mousePoint.x - this.dragStart.x,
+            y: this.mousePoint.y - this.dragStart.y
+        };
+        points = points.map(p => ({
+                x: Math.round(p.x + transform.x),
+                y: Math.round(p.y + transform.y)
+            }
+        ));
+        return points;
+    }
+
+    onMapClicked(state: MapState, selected: SelectedState): void {
 
         if (this.dragStart) {
+            const room = state.rooms[selected.index];
+            this.updateRoom({
+                ...room,
+                points: this.translatePoints(room.points)
+            });
             this.dragStart = null;
             return;
         }

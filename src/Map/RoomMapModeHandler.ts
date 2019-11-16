@@ -10,7 +10,7 @@ export class RoomMapModeHandler implements MapModeHandler {
     constructor(private roomCreated: (points: Point[]) => void) {
     }
 
-    onMapClicked(state: MapState): void {
+    onMapClicked(state: MapState, selected: SelectedState): void {
         if (this.activePoints.length !== 0 &&
             this.activePoints[0].x === this.mouseGridPos.x &&
             this.activePoints[0].y === this.mouseGridPos.y) {
