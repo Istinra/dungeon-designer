@@ -29,7 +29,6 @@
 
 Phase 9 - Object Translation / Deletion
 * Translate / Delete Rooms
-    * Walls 
     * Points
 * Translate / Delete Props
 * Delete

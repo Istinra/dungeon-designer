@@ -32,7 +32,9 @@ export class RoomMapModeHandler implements MapModeHandler {
         if (this.activePoints.length > 0) {
             renderer.setState({
                 strokeColour: "green",
-                fillColour: "green"
+                fillColour: "green",
+                lineWidth: 1,
+                pointRadius: 2
             });
             renderer.drawJoinLine(this.activePoints, this.mouseGridPos);
         }

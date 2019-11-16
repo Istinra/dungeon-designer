@@ -23,7 +23,8 @@ export class SelectMapModeHandler implements MapModeHandler {
             renderer.setState({
                 strokeColour: room.color,
                 fillColour: room.color,
-                lineWidth: room.wallThickness
+                lineWidth: room.wallThickness,
+                pointRadius: 5
             });
             renderer.drawRoom(points, room.name + " (Selected)");
         }

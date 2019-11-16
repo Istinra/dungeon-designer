@@ -19,6 +19,7 @@ export default class MapRenderer {
     private updateCanvas(): void {
         this.ctx.fillStyle = this.state.fillColour;
         this.ctx.strokeStyle = this.state.strokeColour;
+        this.ctx.lineWidth = this.state.lineWidth;
     }
 
     public drawGrid(width: number, height: number) {

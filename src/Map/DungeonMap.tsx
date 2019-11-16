@@ -107,7 +107,8 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
             this.renderer.setState({
                 strokeColour: room.color,
                 fillColour: room.color,
-                lineWidth: room.wallThickness
+                lineWidth: room.wallThickness,
+                pointRadius: 2
             });
             this.renderer.drawRoom(room.points, room.name);
         }
