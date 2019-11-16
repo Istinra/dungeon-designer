@@ -33,6 +33,7 @@ Phase 9 - Object Translation / Deletion
     * Points
 * Translate / Delete Props
 * Delete
+* Visual Representation for drag
 
 Todo for Phase N - (Effort - S / M / L)
 * High Priority (MVP)

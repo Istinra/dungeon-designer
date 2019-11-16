@@ -7,6 +7,7 @@ export class SelectMapModeHandler implements MapModeHandler {
     private mousePoint: Point = {x: 0, y: 0};
 
     private dragStart?: Point;
+    private dragPoint?: number = -1;
 
     constructor(private onSelection: (selected: SelectedState) => void,
                 private updateRoom: (roomUpdate: Room) => void) {
@@ -30,11 +31,20 @@ export class SelectMapModeHandler implements MapModeHandler {
             x: this.mousePoint.x - this.dragStart.x,
             y: this.mousePoint.y - this.dragStart.y
         };
-        points = points.map(p => ({
+        if (this.dragPoint > -1) {
+            points = [...points];
+            const p = points[this.dragPoint];
+            points[this.dragPoint] = {
                 x: Math.round(p.x + transform.x),
                 y: Math.round(p.y + transform.y)
-            }
-        ));
+            };
+        } else {
+            points = points.map(p => ({
+                    x: Math.round(p.x + transform.x),
+                    y: Math.round(p.y + transform.y)
+                }
+            ));
+        }
         return points;
     }
 
@@ -46,6 +56,7 @@ export class SelectMapModeHandler implements MapModeHandler {
                 ...room,
                 points: this.translatePoints(room.points)
             });
+            this.dragPoint = null;
             this.dragStart = null;
             return;
         }
@@ -80,14 +91,26 @@ export class SelectMapModeHandler implements MapModeHandler {
 
     onMouseDown(state: MapState, selected: SelectedState): void {
         //On mouse down record the current position + what got selected +
-        if (selected.type === ObjectType.ROOM && this.testRoom(state.rooms[selected.index])) {
-            this.dragStart = this.mousePoint;
+        if (selected.type === ObjectType.ROOM) {
+            const selectedRoom = state.rooms[selected.index];
+            this.dragPoint = selectedRoom.points.findIndex(this.testPoint);
+            if (this.testRoom(selectedRoom) || this.dragPoint > -1) {
+                this.dragStart = this.mousePoint;
+            }
         }
     }
 
     onMouseOut(): void {
         this.dragStart = null;
+        this.dragPoint = null;
     }
+
+    private testPoint = (p: Point) => {
+        return p.x - 0.1 < this.mousePoint.x &&
+            p.x + 0.1 > this.mousePoint.x &&
+            p.y - 0.1 < this.mousePoint.y &&
+            p.y + 0.1 > this.mousePoint.y;
+    };
 
     private testDoor(door: Door): boolean {
         let count = 0;
