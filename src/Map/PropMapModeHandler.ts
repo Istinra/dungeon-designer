@@ -1,6 +1,6 @@
 import {MapModeHandler} from "./MapModeHandler";
 import {MapState, Point, SelectedState} from "../state";
-import {drawProp} from "./DungonMapConstants";
+import MapRenderer from "./MapRenderer";
 
 export class PropMapModeHandler implements MapModeHandler {
 
@@ -20,11 +20,13 @@ export class PropMapModeHandler implements MapModeHandler {
         this.propCreated(this.mousePos);
     }
 
-    draw(state: MapState, selected: SelectedState, ctx: CanvasRenderingContext2D, scale: number): void {
+    draw(state: MapState, selected: SelectedState, renderer: MapRenderer, scale: number): void {
         if (this.mousePos) {
-            ctx.strokeStyle = "#00FFFF";
-            ctx.fillStyle = "#00FFFF";
-            drawProp(this.mousePos, ctx, scale);
+            renderer.setState({
+                strokeColour: "#00FFFF",
+                fillColour: "#00FFFF"
+            });
+            renderer.drawProp(this.mousePos);
         }
     }
 

@@ -1,6 +1,6 @@
 import {MapModeHandler} from "./MapModeHandler";
 import {Door, MapState, ObjectType, Point, Prop, Room, SelectedState} from "../state";
-import {drawRoom} from "./DungonMapConstants";
+import MapRenderer from "./MapRenderer";
 
 export class SelectMapModeHandler implements MapModeHandler {
 
@@ -13,16 +13,19 @@ export class SelectMapModeHandler implements MapModeHandler {
                 private updateRoom: (roomUpdate: Room) => void) {
     }
 
-    draw(state: MapState, selected: SelectedState, ctx: CanvasRenderingContext2D, scale: number): void {
+    draw(state: MapState, selected: SelectedState, renderer: MapRenderer, scale: number): void {
         if (selected.type === ObjectType.ROOM) {
             const room = state.rooms[selected.index];
             let points = room.points;
             if (this.dragStart) {
                 points = this.translatePoints(points);
             }
-            ctx.strokeStyle = room.color;
-            ctx.fillStyle = room.color;
-            drawRoom(points, room.wallThickness, ctx, scale, room.name + " (Selected)");
+            renderer.setState({
+                strokeColour: room.color,
+                fillColour: room.color,
+                lineWidth: room.wallThickness
+            });
+            renderer.drawRoom(points, room.name + " (Selected)");
         }
     }
 

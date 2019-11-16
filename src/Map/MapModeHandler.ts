@@ -1,4 +1,5 @@
 import {MapState, Point, SelectedState} from "../state";
+import MapRenderer from "./MapRenderer";
 
 export interface MapModeHandler {
 
@@ -6,7 +7,7 @@ export interface MapModeHandler {
 
     onMapClicked(state: MapState, selected: SelectedState): void;
 
-    draw(state: MapState, selected: SelectedState, ctx: CanvasRenderingContext2D, scale: number): void;
+    draw(state: MapState, selected: SelectedState, renderer: MapRenderer, scale: number): void;
 
     onMouseDown?(state: MapState, selected: SelectedState): void;
 

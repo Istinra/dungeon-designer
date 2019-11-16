@@ -1,6 +1,6 @@
 import {MapState, Point, SelectedState} from "../state";
-import {drawLine} from "./DungonMapConstants";
 import {MapModeHandler} from "./MapModeHandler";
+import MapRenderer from "./MapRenderer";
 
 export class RoomMapModeHandler implements MapModeHandler {
 
@@ -28,14 +28,13 @@ export class RoomMapModeHandler implements MapModeHandler {
         }
     }
 
-    draw(state: MapState, selected: SelectedState, ctx: CanvasRenderingContext2D, scale: number): void {
+    draw(state: MapState, selected: SelectedState, renderer: MapRenderer, scale: number): void {
         if (this.activePoints.length > 0) {
-            ctx.fillStyle = "green";
-            ctx.strokeStyle = "green";
-            for (let i = 0; i < this.activePoints.length - 1; i++) {
-                drawLine(this.activePoints[i], this.activePoints[i + 1], ctx, scale);
-            }
-            drawLine(this.activePoints[this.activePoints.length - 1], this.mouseGridPos, ctx, scale);
+            renderer.setState({
+                strokeColour: "green",
+                fillColour: "green"
+            });
+            renderer.drawJoinLine(this.activePoints, this.mouseGridPos);
         }
     }
 }

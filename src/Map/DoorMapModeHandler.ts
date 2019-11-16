@@ -1,6 +1,6 @@
 import {MapState, Point, SelectedState} from "../state";
-import {drawBlock} from "./DungonMapConstants";
 import {MapModeHandler} from "./MapModeHandler";
+import MapRenderer from "./MapRenderer";
 
 export class DoorMapModeHandler implements MapModeHandler {
 
@@ -83,11 +83,13 @@ export class DoorMapModeHandler implements MapModeHandler {
         }
     }
 
-    draw(state: MapState, selected: SelectedState, ctx: CanvasRenderingContext2D, scale: number): void {
+    draw(state: MapState, selected: SelectedState, renderer: MapRenderer, scale: number): void {
         if (this.pendingDoor) {
-            ctx.strokeStyle = "yellow";
-            ctx.fillStyle = "yellow";
-            drawBlock(this.pendingDoor.from, this.pendingDoor.to, this.pendingDoor.normalVec, ctx, scale);
+            renderer.setState({
+                strokeColour: "yellow",
+                fillColour: "yellow"
+            });
+            renderer.drawBlock(this.pendingDoor.from, this.pendingDoor.to, this.pendingDoor.normalVec);
         }
     }
 }

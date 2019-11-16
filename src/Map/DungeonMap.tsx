@@ -11,12 +11,12 @@ import {
     UPDATE_ROOM_PROPERTIES
 } from "../actions";
 import "./DungeonMap.css"
-import {drawBlock, drawProp, drawRoom} from "./DungonMapConstants";
 import {MapModeHandler} from "./MapModeHandler";
 import {RoomMapModeHandler} from "./RoomMapModeHandler";
 import {DoorMapModeHandler} from "./DoorMapModeHandler";
 import {SelectMapModeHandler} from "./SelectMapModeHandler";
 import {PropMapModeHandler} from "./PropMapModeHandler";
+import MapRenderer from "./MapRenderer";
 
 interface DungeonMapStateProps {
     state: DesignerState
@@ -49,6 +49,8 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
     private modeHandler: MapModeHandler;
     private readonly modeHandlerMapping: { [key: number]: MapModeHandler };
 
+    private readonly renderer: MapRenderer = new MapRenderer();
+
     constructor(props: Readonly<DungeonMapStateProps & DungeonMapDispatchProps>) {
         super(props);
         this.state = {
@@ -67,6 +69,13 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
 
     componentDidMount(): void {
         this.ctx = this.canvasRef.current.getContext('2d');
+        this.renderer.init(this.ctx, {
+            scale: this.props.state.scale,
+            lineWidth: 1,
+            pointRadius: 5,
+            fillColour: "000",
+            strokeColour: "000"
+        });
         requestAnimationFrame(this.draw);
     }
 
@@ -75,53 +84,52 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
         this.drawRooms();
         this.drawDoors();
         this.drawProps();
-        this.modeHandler.draw(this.props.state.map, this.props.state.selected, this.ctx, this.props.state.scale);
+        this.modeHandler.draw(this.props.state.map, this.props.state.selected, this.renderer, this.props.state.scale);
         requestAnimationFrame(this.draw)
     };
 
     private drawGrid() {
-        this.ctx.fillStyle = this.props.state.map.properties.backgroundColor;
-        this.ctx.fillRect(0, 0, this.state.widthPx, this.state.heightPx);
-        this.ctx.strokeStyle = this.props.state.map.properties.gridLineColor;
-        for (let i = 0; i <= this.props.state.map.properties.width; i++) {
-            this.ctx.beginPath();
-            this.ctx.moveTo(i * this.props.state.scale, 0);
-            this.ctx.lineTo(i * this.props.state.scale, this.state.heightPx);
-            this.ctx.stroke();
-        }
-        for (let i = 0; i <= this.props.state.map.properties.height; i++) {
-            this.ctx.beginPath();
-            this.ctx.moveTo(0, i * this.props.state.scale);
-            this.ctx.lineTo(this.state.widthPx, i * this.props.state.scale);
-            this.ctx.stroke();
-        }
+        this.renderer.setState({
+            fillColour: this.props.state.map.properties.backgroundColor,
+            strokeColour: this.props.state.map.properties.gridLineColor,
+            lineWidth: 1
+        });
+        this.renderer.drawGrid(this.props.state.map.properties.width, this.props.state.map.properties.height);
     }
 
     private drawRooms() {
         for (let room of this.props.state.map.rooms) {
-            if (this.props.state.selected && this.props.state.selected.type === ObjectType.ROOM &&
+            if (this.props.state.toolMode === ToolMode.SELECT &&
+                this.props.state.selected && this.props.state.selected.type === ObjectType.ROOM &&
                 room === this.props.state.map.rooms[this.props.state.selected.index]) {
                 continue;
             }
-            this.ctx.strokeStyle = room.color;
-            this.ctx.fillStyle = room.color;
-            drawRoom(room.points, room.wallThickness, this.ctx, this.props.state.scale, room.name);
+            this.renderer.setState({
+                strokeColour: room.color,
+                fillColour: room.color,
+                lineWidth: room.wallThickness
+            });
+            this.renderer.drawRoom(room.points, room.name);
         }
     }
 
     private drawDoors(): void {
         for (let door of this.props.state.map.doors) {
-            this.ctx.strokeStyle = door.color;
-            this.ctx.fillStyle = door.color;
-            drawBlock(door.from, door.to, door.normalVec, this.ctx, this.props.state.scale, door.name);
+            this.renderer.setState({
+                strokeColour: door.color,
+                fillColour: door.color
+            });
+            this.renderer.drawBlock(door.from, door.to, door.normalVec, door.name);
         }
     }
 
     private drawProps(): void {
         for (let prop of this.props.state.map.props) {
-            this.ctx.strokeStyle = prop.color;
-            this.ctx.fillStyle = prop.color;
-            drawProp(prop.location, this.ctx, this.props.state.scale, prop.name);
+            this.renderer.setState({
+                strokeColour: prop.color,
+                fillColour: prop.color
+            });
+            this.renderer.drawProp(prop.location, prop.name);
         }
     }
 
