@@ -1,10 +1,11 @@
-import {DesignerState, ObjectType, ToolMode} from "./state";
+import {DesignerState, MapState, ObjectType, ToolMode} from "./state";
 import {
     CHANGE_MODE_ACTION,
     CHANGE_ZOOM_LEVEL,
     CREATE_DOOR_ACTION,
     CREATE_PROP_ACTION,
     CREATE_ROOM_ACTION,
+    DELETE_SELECTED,
     DesignerActionTypes,
     IMPORT_MAP,
     SELECT_OBJECT,
@@ -123,6 +124,9 @@ export function designerReducer(state: DesignerState = initialState, action: Des
         case SELECT_OBJECT: {
             return {...state, selected: action.payload};
         }
+        case DELETE_SELECTED: {
+            return deleteReducer(state);
+        }
         case IMPORT_MAP: {
             return {...state, map: action.payload};
         }
@@ -133,8 +137,42 @@ export function designerReducer(state: DesignerState = initialState, action: Des
     return state;
 }
 
+function deleteReducer(state: DesignerState) {
+    let update: Partial<MapState>;
+    if (state.selected.type === ObjectType.ROOM) {
+        update = {
+            rooms: removeAt(state.map.rooms, state.selected.index)
+        }
+    } else if (state.selected.type === ObjectType.DOOR) {
+        update = {
+            doors: removeAt(state.map.doors, state.selected.index)
+        }
+    } else if (state.selected.type === ObjectType.PROP) {
+        update = {
+            props: removeAt(state.map.props, state.selected.index)
+        }
+    } else {
+        return state;
+    }
+    return {
+        ...state,
+        map: {
+            ...state.map,
+            ...update
+        },
+        selected: {
+            type: ObjectType.MAP,
+            index: 0
+        }
+    }
+}
+
 function replaceAt(array: any[], index: number, value: any): any[] {
     const ret = array.slice(0);
     ret[index] = value;
     return ret;
+}
+
+function removeAt(array: any[], index: number): any[] {
+    return [...array.slice(0, index), ...array.slice(index + 1)];
 }

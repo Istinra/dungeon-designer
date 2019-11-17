@@ -5,6 +5,7 @@ import {Dispatch} from "redux";
 import {connect} from 'react-redux';
 import {InputComponent} from "../components/InputComponents";
 import {
+    DELETE_SELECTED,
     UPDATE_DOOR_PROPERTIES,
     UPDATE_MAP_PROPERTIES,
     UPDATE_PROP_PROPERTIES,
@@ -16,16 +17,20 @@ type PropertiesPanelTypes = Room | Door | Prop | MapPropertiesState;
 
 interface PropertiesPanelProps {
     selected: PropertiesPanelTypes;
+    mode: ToolMode
 }
 
 interface PropertiesPanelDispatch {
     onUpdate(update: PropertiesPanelTypes): void;
+
+    onDelete(): void;
 }
 
 class PropertiesPanel extends React.Component<PropertiesPanelProps & PropertiesPanelDispatch> {
 
     render() {
         let selectedContent;
+        let deleteButton;
         if (this.props.selected) {
             switch (this.props.selected.type) {
                 case ObjectType.ROOM:
@@ -40,9 +45,18 @@ class PropertiesPanel extends React.Component<PropertiesPanelProps & PropertiesP
                 default:
                     selectedContent = this.mapProps(this.props.selected);
             }
+            if (this.props.mode === ToolMode.SELECT &&
+                (this.props.selected.type === ObjectType.ROOM ||
+                    this.props.selected.type === ObjectType.DOOR ||
+                    this.props.selected.type === ObjectType.PROP)) {
+                deleteButton =
+                    <button type="button" className="PropertiesPanel-delete" onClick={this.onDelete}>Delete</button>;
+            }
         }
+
         return <div className="PropertiesPanel">
             {selectedContent}
+            {deleteButton}
         </div>
     }
 
@@ -95,7 +109,9 @@ class PropertiesPanel extends React.Component<PropertiesPanelProps & PropertiesP
 
     private onChange = (name: string, value: string) => {
         this.props.onUpdate({...this.props.selected, [name]: value});
-    }
+    };
+
+    private onDelete = () => this.props.onDelete();
 }
 
 function mapStateToProps(state: DesignerState): PropertiesPanelProps {
@@ -104,22 +120,22 @@ function mapStateToProps(state: DesignerState): PropertiesPanelProps {
             if (state.selected) {
                 switch (state.selected.type) {
                     case ObjectType.ROOM:
-                        return {selected: state.map.rooms[state.selected.index]};
+                        return {selected: state.map.rooms[state.selected.index], mode: state.toolMode};
                     case ObjectType.DOOR:
-                        return {selected: state.map.doors[state.selected.index]};
+                        return {selected: state.map.doors[state.selected.index], mode: state.toolMode};
                     case ObjectType.PROP:
-                        return {selected: state.map.props[state.selected.index]};
+                        return {selected: state.map.props[state.selected.index], mode: state.toolMode};
                 }
             }
             break;
         case ToolMode.ROOM:
-            return {selected: state.pendingObjects.room};
+            return {selected: state.pendingObjects.room, mode: state.toolMode};
         case ToolMode.DOOR:
-            return {selected: state.pendingObjects.door};
+            return {selected: state.pendingObjects.door, mode: state.toolMode};
         case ToolMode.PROP:
-            return {selected: state.pendingObjects.prop};
+            return {selected: state.pendingObjects.prop, mode: state.toolMode};
     }
-    return {selected: state.map.properties};
+    return {selected: state.map.properties, mode: state.toolMode};
 }
 
 function mapStateToDispatch(dispatch: Dispatch): PropertiesPanelDispatch {
@@ -140,7 +156,11 @@ function mapStateToDispatch(dispatch: Dispatch): PropertiesPanelDispatch {
                     type = UPDATE_MAP_PROPERTIES;
             }
             dispatch({type: type, payload: update});
+        },
+        onDelete(): void {
+            dispatch({type: DELETE_SELECTED});
         }
+
     }
 }
 
