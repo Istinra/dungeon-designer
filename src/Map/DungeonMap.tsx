@@ -1,5 +1,5 @@
 import React, {MouseEvent} from 'react';
-import {DesignerState, ObjectType, Point, Room, SelectedState, ToolMode} from "../state";
+import {DesignerState, ObjectType, Point, Prop, Room, SelectedState, ToolMode} from "../state";
 import {connect} from 'react-redux';
 import {Dispatch} from "redux";
 import {
@@ -8,6 +8,7 @@ import {
     CREATE_PROP_ACTION,
     CREATE_ROOM_ACTION,
     SELECT_OBJECT,
+    UPDATE_PROP_PROPERTIES,
     UPDATE_ROOM_PROPERTIES
 } from "../actions";
 import "./DungeonMap.css"
@@ -34,6 +35,8 @@ interface DungeonMapDispatchProps {
     updateZoomLevel(newScale: number): void;
 
     updateRoom(roomUpdate: Room): void;
+
+    updateProp(propUpdate: Prop): void;
 }
 
 interface DungeonMapState {
@@ -59,7 +62,7 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
         };
         this.canvasRef = React.createRef<HTMLCanvasElement>();
         this.modeHandlerMapping = {
-            [ToolMode.SELECT]: new SelectMapModeHandler(props.onSelection, props.updateRoom),
+            [ToolMode.SELECT]: new SelectMapModeHandler(props.onSelection, props.updateRoom, this.props.updateProp),
             [ToolMode.DOOR]: new DoorMapModeHandler(props.doorCreated),
             [ToolMode.ROOM]: new RoomMapModeHandler(props.roomCreated),
             [ToolMode.PROP]: new PropMapModeHandler(props.propCreated)
@@ -126,6 +129,11 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
 
     private drawProps(): void {
         for (let prop of this.props.state.map.props) {
+            if (this.props.state.toolMode === ToolMode.SELECT &&
+                this.props.state.selected && this.props.state.selected.type === ObjectType.PROP &&
+                prop === this.props.state.map.props[this.props.state.selected.index]) {
+                continue;
+            }
             this.renderer.setState({
                 strokeColour: prop.color,
                 fillColour: prop.color
@@ -204,7 +212,8 @@ function mapStateToDispatch(dispatch: Dispatch): DungeonMapDispatchProps {
         onSelection: (selected: SelectedState) =>
             dispatch({type: SELECT_OBJECT, payload: selected}),
         updateZoomLevel: (newScale: number) => dispatch({type: CHANGE_ZOOM_LEVEL, payload: newScale}),
-        updateRoom: (roomUpdate: Room) => dispatch({type: UPDATE_ROOM_PROPERTIES, payload: roomUpdate})
+        updateRoom: (roomUpdate: Room) => dispatch({type: UPDATE_ROOM_PROPERTIES, payload: roomUpdate}),
+        updateProp: (propUpdate: Prop) => dispatch({type: UPDATE_PROP_PROPERTIES, payload: propUpdate})
     };
 }
 

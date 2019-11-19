@@ -26,17 +26,19 @@
 ~~Milestone 8 - Zoom Levels~~
 * Map can be zoomed in or out 
 
-Milestone 9 - Object Translation / Deletion
+~~Milestone 9 - Object Translation / Deletion~~
 * Translate / Delete Rooms
     * Points
 * Translate / Delete Props
 * Delete
-* Visual Representation for drag
+* Visual Representation for select
 
 MVP Polish - 
 * Improved doorways / openings
+    * Wall mode instead of door? Opening / Door / Split / Merge walls
 * Improve room / hallway creation
 * Improved props
+* Drag UX
 * Key bindings
 
 Todo for Milestone N - (Effort - S / M / L)
