@@ -173,7 +173,10 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
             this.setState({
                 widthPx: this.props.state.map.properties.width * this.props.state.scale,
                 heightPx: this.props.state.map.properties.height * this.props.state.scale
-            })
+            });
+            this.renderer.setState({
+                scale: this.props.state.scale
+            });
         }
     }
 

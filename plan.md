@@ -35,11 +35,18 @@
 
 MVP Polish - 
 * Improved doorways / openings
-    * Wall mode instead of door? Opening / Door / Split / Merge walls
+    * Option 1:  Wall mode instead of door? Opening / Door / Split / Merge walls
+    * Option 2:  Can select walls separately from rooms
 * Improve room / hallway creation
 * Improved props
 * Drag UX
 * Key bindings
+
+UX Test Scott
+* Select + Drag in same action expected
+~~* Zoom broken~~
+* Dragging points often missed
+* Expected drag to draw a box
 
 Todo for Milestone N - (Effort - S / M / L)
 * High Priority (MVP)
