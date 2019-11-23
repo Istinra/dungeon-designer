@@ -42,12 +42,6 @@ MVP Polish -
 * Drag UX
 * Key bindings
 
-UX Test Scott
-* ~~Select + Drag in same action expected~~
-* ~~Zoom broken~~
-* ~~Dragging points often missed~~
-* Expected drag to draw a box
-
 Todo for Milestone N - (Effort - S / M / L)
 * High Priority (MVP)
     * [M] Improve Doorways / Openings
@@ -64,3 +58,9 @@ Todo for Milestone N - (Effort - S / M / L)
     
 Notes 
 * Consider porting to WebGL when implementing textures
+
+UX Test Scott
+* ~~Select + Drag in same action expected~~
+* ~~Zoom broken~~
+* ~~Dragging points often missed~~
+* ~~Expected drag to draw a box~~
