@@ -65,34 +65,31 @@ export class SelectMapModeHandler implements MapModeHandler {
     }
 
     onMapClicked(state: MapState, selected: SelectedState): void {
-
         if (this.dragStart) {
             this.commitDrag(selected, state);
-            return;
         }
+    }
 
+    private findSelection(state: MapState): SelectedState {
         for (let i = 0; i < state.doors.length; i++) {
             const door = state.doors[i];
             if (this.testDoor(door)) {
-                this.onSelection({type: ObjectType.DOOR, index: i});
-                return;
+                return {type: ObjectType.DOOR, index: i};
             }
         }
         for (let i = 0; i < state.props.length; i++) {
             const prop = state.props[i];
             if (this.testProp(prop)) {
-                this.onSelection({type: ObjectType.PROP, index: i});
-                return;
+                return {type: ObjectType.PROP, index: i};
             }
         }
         for (let i = 0; i < state.rooms.length; i++) {
             const room = state.rooms[i];
             if (this.testRoom(room)) {
-                this.onSelection({type: ObjectType.ROOM, index: i});
-                return;
+                return {type: ObjectType.ROOM, index: i};
             }
         }
-        this.onSelection({type: ObjectType.MAP, index: 0});
+        return {type: ObjectType.MAP, index: 0};
     }
 
     private commitDrag(selected: SelectedState, state: MapState) {
@@ -109,7 +106,7 @@ export class SelectMapModeHandler implements MapModeHandler {
                 location: this.mousePoint
             });
         }
-        this.dragPoint = null;
+        this.dragPoint = -1;
         this.dragStart = null;
     }
 
@@ -118,18 +115,18 @@ export class SelectMapModeHandler implements MapModeHandler {
     }
 
     onMouseDown(state: MapState, selected: SelectedState): void {
-        //On mouse down record the current position + what got selected +
+
+        this.dragStart = this.mousePoint;
         if (selected.type === ObjectType.ROOM) {
             const selectedRoom = state.rooms[selected.index];
             this.dragPoint = selectedRoom.points.findIndex(this.testPoint);
-            if (this.testRoom(selectedRoom) || this.dragPoint > -1) {
-                this.dragStart = this.mousePoint;
+            if (this.dragPoint !== -1) {
+                return;
             }
-        } else if (selected.type === ObjectType.PROP) {
-            const selectedProp = state.props[selected.index];
-            if (this.testProp(selectedProp)) {
-                this.dragStart = this.mousePoint;
-            }
+        }
+        const newSelection: SelectedState = this.findSelection(state);
+        if (selected.type !== newSelection.type || selected.index !== newSelection.index) {
+            this.onSelection(newSelection);
         }
     }
 
@@ -139,10 +136,10 @@ export class SelectMapModeHandler implements MapModeHandler {
     }
 
     private testPoint = (p: Point) => {
-        return p.x - 0.1 < this.mousePoint.x &&
-            p.x + 0.1 > this.mousePoint.x &&
-            p.y - 0.1 < this.mousePoint.y &&
-            p.y + 0.1 > this.mousePoint.y;
+        return p.x - 0.2 < this.mousePoint.x &&
+            p.x + 0.2 > this.mousePoint.x &&
+            p.y - 0.2 < this.mousePoint.y &&
+            p.y + 0.2 > this.mousePoint.y;
     };
 
     private testDoor(door: Door): boolean {
