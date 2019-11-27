@@ -77,6 +77,17 @@ export class SelectMapModeHandler implements MapModeHandler {
                 return {type: ObjectType.DOOR, index: i};
             }
         }
+        for (let i = 0; i < state.rooms.length; i++) {
+            const room = state.rooms[i];
+            let b = false;
+            for (let j = 0; j < room.points.length - 1; j++) {
+                b= this.testWall(room.points[j], room.points[j + 1], room.wallThickness);
+            }
+            b = this.testWall(room.points[room.points.length - 1], room.points[0], room.wallThickness);
+            if (b) {
+                console.log("Wall!");
+            }
+        }
         for (let i = 0; i < state.props.length; i++) {
             const prop = state.props[i];
             if (this.testProp(prop)) {
@@ -142,16 +153,28 @@ export class SelectMapModeHandler implements MapModeHandler {
             p.y + 0.2 > this.mousePoint.y;
     };
 
+    private testWall(from: Point, to: Point, thickness: number) {
+
+        const vx = to.x - from.x, vy = to.y - from.y;
+        const vm = Math.sqrt(vx * vx + vy * vy);
+        const x = thickness * vx / vm;
+        const y = thickness * vy / vm;
+
+        return this.testLine(from, to, x, y);
+    }
+
     private testDoor(door: Door): boolean {
+        return this.testLine(door.from, door.to, door.normalVec.x, door.normalVec.y);
+    }
+    
+    private testLine(from: Point, to: Point, x: number, y: number): boolean {
+
+        const cornerA = {x: from.x - x, y: from.y - y};
+        const cornerB = {x: from.x + x, y: from.y + y};
+        const cornerC = {x: to.x + x, y: to.y + y};
+        const cornerD = {x: to.x - x, y: to.y - y};
+
         let count = 0;
-
-        const x = door.normalVec.x;
-        const y = door.normalVec.y;
-
-        const cornerA = {x: door.from.x - x, y: door.from.y - y};
-        const cornerB = {x: door.from.x + x, y: door.from.y + y};
-        const cornerC = {x: door.to.x + x, y: door.to.y + y};
-        const cornerD = {x: door.to.x - x, y: door.to.y - y};
 
         if (this.intersectsLine(cornerA, cornerB)) {
             count++;

@@ -37,10 +37,15 @@ MVP Polish -
 * Improved doorways / openings
     * Option 1:  Wall mode instead of door? Opening / Door / Split / Merge walls
     * Option 2:  Can select walls separately from rooms
-* Improve room / hallway creation
+        * ~~Introduce wall segments~~
+        * Make segments selectable
+        * Properties panel with split option 
+        * Attach Doors to segments
+        * Doors move with room/wall 
 * Improved props
-* Drag UX
 * Key bindings
+* ~~Drag UX~~
+* ~~Improve room / hallway creation~~
 
 Todo for Milestone N - (Effort - S / M / L)
 * High Priority (MVP)

@@ -56,8 +56,14 @@ export interface Room {
     type: typeof ObjectType.ROOM,
     name: string;
     points: Point[];
+    walls: Wall[];
     color: string;
     wallThickness: number;
+}
+
+export interface Wall {
+    pointIndex: number;
+    solid: boolean;
 }
 
 export interface Door {
