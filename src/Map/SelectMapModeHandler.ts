@@ -81,9 +81,9 @@ export class SelectMapModeHandler implements MapModeHandler {
             const room = state.rooms[i];
             let b = false;
             for (let j = 0; j < room.points.length - 1; j++) {
-                b= this.testWall(room.points[j], room.points[j + 1], room.wallThickness);
+                b = b || this.testWall(room.points[j], room.points[j + 1]);
             }
-            b = this.testWall(room.points[room.points.length - 1], room.points[0], room.wallThickness);
+            b = b || this.testWall(room.points[room.points.length - 1], room.points[0]);
             if (b) {
                 console.log("Wall!");
             }
@@ -153,20 +153,18 @@ export class SelectMapModeHandler implements MapModeHandler {
             p.y + 0.2 > this.mousePoint.y;
     };
 
-    private testWall(from: Point, to: Point, thickness: number) {
+    private testWall(from: Point, to: Point) {
 
         const vx = to.x - from.x, vy = to.y - from.y;
         const vm = Math.sqrt(vx * vx + vy * vy);
-        const x = thickness * vx / vm;
-        const y = thickness * vy / vm;
 
-        return this.testLine(from, to, x, y);
+        return this.testLine(from, to, -vy / vm / 10, vx / vm / 10);
     }
 
     private testDoor(door: Door): boolean {
         return this.testLine(door.from, door.to, door.normalVec.x, door.normalVec.y);
     }
-    
+
     private testLine(from: Point, to: Point, x: number, y: number): boolean {
 
         const cornerA = {x: from.x - x, y: from.y - y};
