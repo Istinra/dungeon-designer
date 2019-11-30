@@ -1,4 +1,4 @@
-import {DesignerState, MapState, ObjectType, ToolMode} from "./state";
+import {DesignerState, MapState, ObjectType, Point, ToolMode} from "./state";
 import {
     CHANGE_MODE_ACTION,
     CHANGE_ZOOM_LEVEL,
@@ -9,10 +9,12 @@ import {
     DesignerActionTypes,
     IMPORT_MAP,
     SELECT_OBJECT,
+    SPLIT_WALL_PROPERTIES,
     UPDATE_DOOR_PROPERTIES,
     UPDATE_MAP_PROPERTIES,
     UPDATE_PROP_PROPERTIES,
     UPDATE_ROOM_PROPERTIES,
+    UPDATE_WALL_PROPERTIES,
 } from "./actions";
 
 const initialState: DesignerState = {
@@ -133,8 +135,63 @@ export function designerReducer(state: DesignerState = initialState, action: Des
         case CHANGE_ZOOM_LEVEL: {
             return {...state, scale: action.payload};
         }
+        case SPLIT_WALL_PROPERTIES: {
+            return splitSelectedWall(state);
+        }
+        case UPDATE_WALL_PROPERTIES: {
+            const room = state.map.rooms[state.selected.index];
+            const wallIndex = room.walls.findIndex(w => w.pointIndex === state.selected.subIndex);
+            return {
+                ...state,
+                map: {
+                    ...state.map,
+                    rooms: replaceAt(state.map.rooms, state.selected.index,
+                        {
+                            ...room,
+                            walls: wallIndex === -1 ? [action.payload] : replaceAt(room.walls, wallIndex, action.payload)
+                        }
+                    )
+                }
+            };
+        }
     }
     return state;
+}
+
+function splitSelectedWall(state: DesignerState) {
+    const selectedRoom = state.map.rooms[state.selected.index];
+
+    const newPointIndex = state.selected.subIndex + 1;
+    //Need to account for the last point given rooms can loop
+    const from = selectedRoom.points[state.selected.subIndex],
+        to = selectedRoom.points[newPointIndex === selectedRoom.points.length ? 0 : newPointIndex];
+
+    const newPoint: Point = {
+        x: from.x + (to.x - from.x) / 2,
+        y: from.y + (to.y - from.y) / 2
+    };
+
+    let newPoints: Point[];
+    if (newPointIndex === selectedRoom.points.length) {
+        newPoints = [
+            ...selectedRoom.points.slice(0, newPointIndex),
+            newPoint
+        ];
+    } else {
+        newPoints = [
+            ...selectedRoom.points.slice(0, newPointIndex),
+            newPoint,
+            ...selectedRoom.points.slice(newPointIndex)
+        ]
+    }
+    return {
+        ...state,
+        map: {
+            ...state.map,
+            rooms: replaceAt(state.map.rooms, state.selected.index, {...selectedRoom, points: newPoints})
+        },
+        selected: {...state.selected, type: ObjectType.ROOM}
+    };
 }
 
 function deleteReducer(state: DesignerState) {

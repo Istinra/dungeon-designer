@@ -17,7 +17,8 @@ export enum ObjectType {
     MAP,
     ROOM,
     DOOR,
-    PROP
+    PROP,
+    WALL
 }
 
 export interface PropertiesPanelState {
@@ -28,7 +29,8 @@ export interface PropertiesPanelState {
 
 export interface SelectedState {
     type: ObjectType,
-    index: number;
+    index: number,
+    subIndex?: number;
 }
 
 export interface MapState {
@@ -62,8 +64,9 @@ export interface Room {
 }
 
 export interface Wall {
+    type: typeof ObjectType.WALL,
     pointIndex: number;
-    solid: boolean;
+    open: boolean;
 }
 
 export interface Door {

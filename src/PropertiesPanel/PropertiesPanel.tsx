@@ -1,19 +1,21 @@
 import * as React from "react";
 import "./PropertiesPanel.scss"
-import {DesignerState, Door, MapPropertiesState, ObjectType, Prop, Room, ToolMode} from "../state";
+import {DesignerState, Door, MapPropertiesState, ObjectType, Prop, Room, ToolMode, Wall} from "../state";
 import {Dispatch} from "redux";
 import {connect} from 'react-redux';
 import {InputComponent} from "../components/InputComponents";
 import {
     DELETE_SELECTED,
+    SPLIT_WALL_PROPERTIES,
     UPDATE_DOOR_PROPERTIES,
     UPDATE_MAP_PROPERTIES,
     UPDATE_PROP_PROPERTIES,
-    UPDATE_ROOM_PROPERTIES
+    UPDATE_ROOM_PROPERTIES,
+    UPDATE_WALL_PROPERTIES
 } from "../actions";
 import ImportExportComponent from "./ImportExportComponent";
 
-type PropertiesPanelTypes = Room | Door | Prop | MapPropertiesState;
+type PropertiesPanelTypes = Room | Door | Prop | Wall | MapPropertiesState;
 
 interface PropertiesPanelProps {
     selected: PropertiesPanelTypes;
@@ -22,6 +24,8 @@ interface PropertiesPanelProps {
 
 interface PropertiesPanelDispatch {
     onUpdate(update: PropertiesPanelTypes): void;
+
+    splitWall(): void;
 
     onDelete(): void;
 }
@@ -41,6 +45,9 @@ class PropertiesPanel extends React.Component<PropertiesPanelProps & PropertiesP
                     break;
                 case ObjectType.PROP:
                     selectedContent = this.propProps(this.props.selected);
+                    break;
+                case ObjectType.WALL:
+                    selectedContent = this.wallProps(this.props.selected);
                     break;
                 default:
                     selectedContent = this.mapProps(this.props.selected);
@@ -97,6 +104,15 @@ class PropertiesPanel extends React.Component<PropertiesPanelProps & PropertiesP
         </section>
     }
 
+    private wallProps(wall: Wall) {
+        return <section>
+            <h3>Wall Properties</h3>
+            <InputComponent id="wall_open" name="open" label="Open"
+                            value={wall.open} type="checkbox" onChange={this.onChange}/>
+            <button type="button" onClick={this.props.splitWall}>Split Wall</button>
+        </section>
+    }
+
     private propProps(prop: Prop) {
         return <section>
             <h3>Prop Properties</h3>
@@ -125,6 +141,11 @@ function mapStateToProps(state: DesignerState): PropertiesPanelProps {
                         return {selected: state.map.doors[state.selected.index], mode: state.toolMode};
                     case ObjectType.PROP:
                         return {selected: state.map.props[state.selected.index], mode: state.toolMode};
+                    case ObjectType.WALL:
+                        return {
+                            selected: findOrCreateWall(state.map.rooms[state.selected.index], state.selected.subIndex),
+                            mode: state.toolMode
+                        };
                 }
             }
             break;
@@ -138,6 +159,14 @@ function mapStateToProps(state: DesignerState): PropertiesPanelProps {
     return {selected: state.map.properties, mode: state.toolMode};
 }
 
+function findOrCreateWall(room: Room, pointIndex: number): Wall {
+    const wall = room.walls.find(w => w.pointIndex === pointIndex);
+    if (wall) {
+        return wall;
+    }
+    return {pointIndex: pointIndex, open: false, type: ObjectType.WALL};
+}
+
 function mapStateToDispatch(dispatch: Dispatch): PropertiesPanelDispatch {
     return {
         onUpdate: (update: PropertiesPanelTypes) => {
@@ -145,6 +174,9 @@ function mapStateToDispatch(dispatch: Dispatch): PropertiesPanelDispatch {
             switch (update.type) {
                 case ObjectType.ROOM:
                     type = UPDATE_ROOM_PROPERTIES;
+                    break;
+                case ObjectType.WALL:
+                    type = UPDATE_WALL_PROPERTIES;
                     break;
                 case ObjectType.DOOR:
                     type = UPDATE_DOOR_PROPERTIES;
@@ -156,6 +188,9 @@ function mapStateToDispatch(dispatch: Dispatch): PropertiesPanelDispatch {
                     type = UPDATE_MAP_PROPERTIES;
             }
             dispatch({type: type, payload: update});
+        },
+        splitWall(): void {
+            dispatch({type: SPLIT_WALL_PROPERTIES})
         },
         onDelete(): void {
             dispatch({type: DELETE_SELECTED});

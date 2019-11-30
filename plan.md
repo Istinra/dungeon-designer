@@ -35,11 +35,11 @@
 
 MVP Polish - 
 * Improved doorways / openings
-    * Option 1:  Wall mode instead of door? Opening / Door / Split / Merge walls
-    * Option 2:  Can select walls separately from rooms
+    * Can select walls separately from rooms
         * ~~Introduce wall segments~~
-        * Make segments selectable
-        * Properties panel with split option 
+        * ~~Make segments selectable~~
+        * ~~Properties panel with split option~~
+        * Can hide walls (Fix property panel issues with type)  
         * Attach Doors to segments
         * Doors move with room/wall 
 * Improved props

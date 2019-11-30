@@ -30,16 +30,20 @@ export class InputComponent extends React.Component<InputProps, InputState> {
 
     render() {
         return <label htmlFor={this.props.id} className="InputComponent-label">
-                {this.props.label}:
-                <input id={this.props.id} type={this.props.type} value={this.state.value}
-                       onChange={this.onChange} onBlur={this.onBlur} className="InputComponent-input"/>
-            </label>;
+            {this.props.label}:
+            <input id={this.props.id} type={this.props.type} value={this.state.value}
+                   onChange={this.onChange} onBlur={this.onBlur} className="InputComponent-input"/>
+        </label>;
     }
 
     private onChange = (event: React.FormEvent<HTMLInputElement>) => {
         this.setState({value: event.currentTarget.value});
         if (this.props.type !== "text") {
-            this.props.onChange(this.props.name, event.currentTarget.value);
+            if (this.props.type === "checkbox") {
+                this.props.onChange(this.props.name, event.currentTarget.checked);
+            } else {
+                this.props.onChange(this.props.name, event.currentTarget.value);
+            }
         }
     };
 

@@ -1,4 +1,4 @@
-import {Door, MapPropertiesState, MapState, Point, Prop, Room, SelectedState, ToolMode} from "./state";
+import {Door, MapPropertiesState, MapState, Point, Prop, Room, SelectedState, ToolMode, Wall} from "./state";
 
 export const CREATE_ROOM_ACTION = "CREATE ROOM";
 export const CREATE_DOOR_ACTION = "CREATE DOOR";
@@ -6,6 +6,8 @@ export const CREATE_PROP_ACTION = "CREATE PROP";
 export const CHANGE_MODE_ACTION = "CHANGE MODE";
 export const UPDATE_MAP_PROPERTIES = "UPDATE MAP PROPERTIES";
 export const UPDATE_ROOM_PROPERTIES = "UPDATE ROOM PROPERTIES";
+export const UPDATE_WALL_PROPERTIES = "UPDATE WALL PROPERTIES";
+export const SPLIT_WALL_PROPERTIES = "SPLIT WALL PROPERTIES";
 export const UPDATE_DOOR_PROPERTIES = "UPDATE DOOR PROPERTIES";
 export const UPDATE_PROP_PROPERTIES = "UPDATE PROP PROPERTIES";
 export const SELECT_OBJECT = "SELECT OBJECT";
@@ -43,6 +45,15 @@ export interface UpdateRoomPropertiesAction {
     payload: Room;
 }
 
+export interface UpdateWallPropertiesAction {
+    type: typeof UPDATE_WALL_PROPERTIES;
+    payload: Wall;
+}
+
+export interface SplitWallPropertiesAction {
+    type: typeof SPLIT_WALL_PROPERTIES;
+}
+
 export interface UpdateDoorPropertiesAction {
     type: typeof UPDATE_DOOR_PROPERTIES;
     payload: Door;
@@ -78,6 +89,8 @@ export type DesignerActionTypes = CreateRoomAction |
     ChangeModeAction |
     UpdateMapPropertiesAction |
     UpdateRoomPropertiesAction |
+    UpdateWallPropertiesAction |
+    SplitWallPropertiesAction |
     UpdateDoorPropertiesAction |
     UpdatePropPropertiesAction |
     SelectObjectAction |

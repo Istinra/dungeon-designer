@@ -15,7 +15,7 @@ export class SelectMapModeHandler implements MapModeHandler {
     }
 
     draw(state: MapState, selected: SelectedState, renderer: MapRenderer, scale: number): void {
-        if (selected.type === ObjectType.ROOM) {
+        if (selected.type === ObjectType.ROOM || selected.type === ObjectType.WALL) {
             const room = state.rooms[selected.index];
             let points = room.points;
             if (this.dragStart) {
@@ -77,21 +77,23 @@ export class SelectMapModeHandler implements MapModeHandler {
                 return {type: ObjectType.DOOR, index: i};
             }
         }
-        for (let i = 0; i < state.rooms.length; i++) {
-            const room = state.rooms[i];
-            let b = false;
-            for (let j = 0; j < room.points.length - 1; j++) {
-                b = b || this.testWall(room.points[j], room.points[j + 1]);
-            }
-            b = b || this.testWall(room.points[room.points.length - 1], room.points[0]);
-            if (b) {
-                console.log("Wall!");
-            }
-        }
         for (let i = 0; i < state.props.length; i++) {
             const prop = state.props[i];
             if (this.testProp(prop)) {
                 return {type: ObjectType.PROP, index: i};
+            }
+        }
+        //Consider having this only happen if the test for a given room passes
+        // to avoid looping over rooms multiple times
+        for (let i = 0; i < state.rooms.length; i++) {
+            const room = state.rooms[i];
+            for (let j = 0; j < room.points.length - 1; j++) {
+                if (this.testWall(room.points[j], room.points[j + 1])) {
+                    return {type: ObjectType.WALL, index: i, subIndex: j};
+                }
+            }
+            if (this.testWall(room.points[room.points.length - 1], room.points[0])) {
+                return {type: ObjectType.WALL, index: i, subIndex: room.points.length - 1};
             }
         }
         for (let i = 0; i < state.rooms.length; i++) {
@@ -143,7 +145,7 @@ export class SelectMapModeHandler implements MapModeHandler {
 
     onMouseOut(): void {
         this.dragStart = null;
-        this.dragPoint = null;
+        this.dragPoint = -1;
     }
 
     private testPoint = (p: Point) => {
