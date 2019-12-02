@@ -53,7 +53,7 @@ export class RoomMapModeHandler implements MapModeHandler {
                 pointRadius: 2
             });
             const dragCorners = this.getDragCorners();
-            renderer.drawRoom(dragCorners);
+            renderer.drawRoom(dragCorners, []);
         } else if (this.activePoints.length > 0) {
             renderer.setState({
                 strokeColour: "green",

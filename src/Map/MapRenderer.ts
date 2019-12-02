@@ -1,4 +1,4 @@
-import {Point} from "../state";
+import {Point, Wall} from "../state";
 
 export default class MapRenderer {
 
@@ -53,9 +53,11 @@ export default class MapRenderer {
         this.drawPoint(to);
     }
 
-    public drawRoom(points: Point[], label?: string) {
+    public drawRoom(points: Point[], walls: Wall[], label?: string) {
         for (let i = 0; i < points.length - 1; i++) {
-            this.drawLine(points[i], points[i + 1]);
+            if (!walls.some(w => w.open && w.pointIndex === i)) {
+                this.drawLine(points[i], points[i + 1]);
+            }
         }
         this.drawLine(points[points.length - 1], points[0]);
         if (label) {
@@ -69,7 +71,7 @@ export default class MapRenderer {
             this.ctx.fillText(label, textPos.x * this.state.scale, (textPos.y - 0.3) * this.state.scale);
         }
     }
-    
+
     public drawJoinLine(points: Point[], endPoint: Point) {
         for (let i = 0; i < points.length - 1; i++) {
             this.drawLine(points[i], points[i + 1]);

@@ -27,7 +27,7 @@ export class SelectMapModeHandler implements MapModeHandler {
                 lineWidth: room.wallThickness,
                 pointRadius: 5
             });
-            renderer.drawRoom(points, room.name + " (Selected)");
+            renderer.drawRoom(points, room.walls, room.name + " (Selected)");
         } else if (selected.type === ObjectType.PROP) {
             const prop = state.props[selected.index];
             let location = prop.location;
