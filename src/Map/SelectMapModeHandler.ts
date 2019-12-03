@@ -138,7 +138,10 @@ export class SelectMapModeHandler implements MapModeHandler {
             }
         }
         const newSelection: SelectedState = this.findSelection(state);
-        if (selected.type !== newSelection.type || selected.index !== newSelection.index) {
+        console.log(newSelection);
+        if (selected.type !== newSelection.type ||
+            selected.index !== newSelection.index ||
+            selected.subIndex !== newSelection.subIndex) {
             this.onSelection(newSelection);
         }
     }

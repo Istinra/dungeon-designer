@@ -39,11 +39,13 @@ MVP Polish -
         * ~~Introduce wall segments~~
         * ~~Make segments selectable~~
         * ~~Properties panel with split option~~
-        * Can hide walls (Fix property panel issues with type)  
+        * ~~Can hide walls~~
+        * ~~Fix property panel issues with type~~  
         * Attach Doors to segments
         * Doors move with room/wall 
 * Improved props
 * Key bindings
+* Text and number components only update onBlur
 * ~~Drag UX~~
 * ~~Improve room / hallway creation~~
 

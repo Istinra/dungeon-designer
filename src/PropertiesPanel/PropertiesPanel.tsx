@@ -3,7 +3,6 @@ import "./PropertiesPanel.scss"
 import {DesignerState, Door, MapPropertiesState, ObjectType, Prop, Room, ToolMode, Wall} from "../state";
 import {Dispatch} from "redux";
 import {connect} from 'react-redux';
-import {InputComponent} from "../components/InputComponents";
 import {
     DELETE_SELECTED,
     SPLIT_WALL_PROPERTIES,
@@ -14,6 +13,12 @@ import {
     UPDATE_WALL_PROPERTIES
 } from "../actions";
 import ImportExportComponent from "./ImportExportComponent";
+import {
+    CheckboxFormComponent,
+    ColorFormComponent,
+    NumberFormComponent,
+    TextFormComponent
+} from "../components/InputComponents";
 
 type PropertiesPanelTypes = Room | Door | Prop | Wall | MapPropertiesState;
 
@@ -70,14 +75,14 @@ class PropertiesPanel extends React.Component<PropertiesPanelProps & PropertiesP
     private mapProps(map: MapPropertiesState) {
         return <section>
             <h3>Map Properties</h3>
-            <InputComponent id="map_grid_colour" name="gridLineColor" label="Grid Colour"
-                            value={map.gridLineColor} type="color" onChange={this.onChange}/>
-            <InputComponent id="map_bg_colour" name="backgroundColor" label="Background Colour"
-                            value={map.backgroundColor} type="color" onChange={this.onChange}/>
-            <InputComponent id="map_grid_width" name="width" label="Grid Width"
-                            value={map.width} type="number" onChange={this.onChange}/>
-            <InputComponent id="map_grid_height" name="height" label="Grid Height"
-                            value={map.height} type="number" onChange={this.onChange}/>
+            <ColorFormComponent id="map_grid_colour" name="gridLineColor" label="Grid Colour"
+                                value={map.gridLineColor} onChange={this.onChange}/>
+            <ColorFormComponent id="map_bg_colour" name="backgroundColor" label="Background Colour"
+                                value={map.backgroundColor} onChange={this.onChange}/>
+            <NumberFormComponent id="map_grid_width" name="width" label="Grid Width"
+                                 value={map.width} onChange={this.onChange}/>
+            <NumberFormComponent id="map_grid_height" name="height" label="Grid Height"
+                                 value={map.height} onChange={this.onChange}/>
             <ImportExportComponent/>
         </section>
     }
@@ -85,30 +90,30 @@ class PropertiesPanel extends React.Component<PropertiesPanelProps & PropertiesP
     private roomProps(room: Room) {
         return <section>
             <h3>Room Properties</h3>
-            <InputComponent id="prop_room_name" name="name" label="Name"
-                            value={room.name} type="text" onChange={this.onChange}/>
-            <InputComponent id="prop_room_colour" name="color" label="Color"
-                            value={room.color} type="color" onChange={this.onChange}/>
-            <InputComponent id="prop_room_colour" name="wallThickness" label="Wall Thickness"
-                            value={room.wallThickness} type="number" onChange={this.onChange}/>
+            <TextFormComponent id="prop_room_name" name="name" label="Name"
+                               value={room.name} onChange={this.onChange}/>
+            <ColorFormComponent id="prop_room_colour" name="color" label="Color"
+                                value={room.color} onChange={this.onChange}/>
+            <NumberFormComponent id="prop_room_colour" name="wallThickness" label="Wall Thickness"
+                                 value={room.wallThickness} onChange={this.onChange}/>
         </section>
     }
 
     private doorProps(door: Door) {
         return <section>
             <h3>Door Properties</h3>
-            <InputComponent id="prop_door_name" name="name" label="Name"
-                            value={door.name} type="text" onChange={this.onChange}/>
-            <InputComponent id="prop_room_colour" name="color" label="Color"
-                            value={door.color} type="color" onChange={this.onChange}/>
+            <TextFormComponent id="prop_door_name" name="name" label="Name"
+                               value={door.name} onChange={this.onChange}/>
+            <ColorFormComponent id="prop_room_colour" name="color" label="Color"
+                                value={door.color} onChange={this.onChange}/>
         </section>
     }
 
     private wallProps(wall: Wall) {
         return <section>
             <h3>Wall Properties</h3>
-            <InputComponent id="wall_open" name="open" label="Open"
-                            value={wall.open} type="checkbox" onChange={this.onChange}/>
+            <CheckboxFormComponent id="wall_open" name="open" label="Open"
+                                   value={wall.open} onChange={this.onChange}/>
             <button type="button" onClick={this.props.splitWall}>Split Wall</button>
         </section>
     }
@@ -116,14 +121,14 @@ class PropertiesPanel extends React.Component<PropertiesPanelProps & PropertiesP
     private propProps(prop: Prop) {
         return <section>
             <h3>Prop Properties</h3>
-            <InputComponent id="prop_prop_name" name="name" label="Name"
-                            value={prop.name} type="text" onChange={this.onChange}/>
-            <InputComponent id="prop_prop_colour" name="color" label="Color"
-                            value={prop.color} type="color" onChange={this.onChange}/>
+            <TextFormComponent id="prop_prop_name" name="name" label="Name"
+                               value={prop.name} onChange={this.onChange}/>
+            <ColorFormComponent id="prop_prop_colour" name="color" label="Color"
+                                value={prop.color} onChange={this.onChange}/>
         </section>
     }
 
-    private onChange = (name: string, value: string) => {
+    private onChange = (name: string, value: any) => {
         this.props.onUpdate({...this.props.selected, [name]: value});
     };
 

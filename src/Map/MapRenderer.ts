@@ -59,7 +59,9 @@ export default class MapRenderer {
                 this.drawLine(points[i], points[i + 1]);
             }
         }
-        this.drawLine(points[points.length - 1], points[0]);
+        if (!walls.some(w => w.open && w.pointIndex === points.length - 1)) {
+            this.drawLine(points[points.length - 1], points[0]);
+        }
         if (label) {
             let textPos = points[0];
             for (let i = 1; i < points.length; i++) {
