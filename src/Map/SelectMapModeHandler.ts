@@ -158,10 +158,13 @@ export class SelectMapModeHandler implements MapModeHandler {
             p.y + 0.2 > this.mousePoint.y;
     };
 
-    private testWall(from: Point, to: Point) {
+    private testWall(from: Point, to: Point): boolean {
 
         const vx = to.x - from.x, vy = to.y - from.y;
-        const vm = Math.sqrt(vx * vx + vy * vy);
+        let vm = Math.sqrt(vx * vx + vy * vy);
+        if (vm === 0) {
+            vm = 1;
+        }
 
         return this.testLine(from, to, -vy / vm / 10, vx / vm / 10);
     }
@@ -215,7 +218,7 @@ export class SelectMapModeHandler implements MapModeHandler {
     }
 
     private intersectsLine(from, to): boolean {
-        if (from.y <= to.y) {
+        if ((from.y - 0.001) <= to.y) {
             if (this.mousePoint.y <= from.y || this.mousePoint.y > to.y ||
                 (this.mousePoint.x >= from.x && this.mousePoint.x >= to.x)) {
                 return false;

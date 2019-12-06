@@ -18,7 +18,9 @@ export class RoomMapModeHandler implements MapModeHandler {
             if (this.activePoints.length !== 0 &&
                 this.activePoints[0].x === this.mouseGridPos.x &&
                 this.activePoints[0].y === this.mouseGridPos.y) {
-                this.roomCreated(this.activePoints);
+                if (this.activePoints.length !== 1) {
+                    this.roomCreated(this.activePoints);
+                }
                 this.activePoints = [];
             } else {
                 this.activePoints.push(this.mouseGridPos);
