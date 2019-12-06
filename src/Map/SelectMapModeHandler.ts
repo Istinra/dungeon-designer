@@ -218,7 +218,7 @@ export class SelectMapModeHandler implements MapModeHandler {
     }
 
     private intersectsLine(from, to): boolean {
-        if ((from.y - 0.001) <= to.y) {
+        if (from.y <= to.y) {
             if (this.mousePoint.y <= from.y || this.mousePoint.y > to.y ||
                 (this.mousePoint.x >= from.x && this.mousePoint.x >= to.x)) {
                 return false;

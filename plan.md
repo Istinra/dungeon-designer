@@ -71,3 +71,12 @@ UX Test Scott
 * ~~Zoom broken~~
 * ~~Dragging points often missed~~
 * ~~Expected drag to draw a box~~
+
+UX Test Jamie
+* ~~Bug with double clicking rooms~~
+* Door snapping to grid
+* Click to place room point + need to complete loop not obvious
+* Desired Features 
+    * Add description field for DMing
+    * Key bindings++
+    * Textures
