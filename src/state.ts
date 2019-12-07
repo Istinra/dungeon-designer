@@ -74,7 +74,6 @@ export interface Door {
     name: string;
     from: Point;
     to: Point;
-    normalVec: Point;
     color: string;
 }
 

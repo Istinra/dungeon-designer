@@ -26,7 +26,7 @@ interface DungeonMapStateProps {
 interface DungeonMapDispatchProps {
     roomCreated(points: Point[]): void;
 
-    doorCreated(points: { from: Point, to: Point, normalVec: Point }): void;
+    doorCreated(points: { from: Point, to: Point }): void;
 
     propCreated(location: Point): void;
 
@@ -123,7 +123,7 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
                 strokeColour: door.color,
                 fillColour: door.color
             });
-            this.renderer.drawBlock(door.from, door.to, door.normalVec, door.name);
+            this.renderer.drawBlock(door.from, door.to, door.name);
         }
     }
 

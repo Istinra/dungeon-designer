@@ -81,7 +81,19 @@ export default class MapRenderer {
         this.drawLine(points[points.length - 1], endPoint);
     }
 
-    public drawBlock(from: Point, to: Point, normalVec: Point, label?: string) {
+    public drawBlock(from: Point, to: Point, label?: string) {
+
+        //TODO move to math util
+        const vx = to.x - from.x, vy = to.y - from.y;
+        let vm = Math.sqrt(vx * vx + vy * vy);
+        if (vm === 0) {
+            vm = 1;
+        }
+
+        const normalVec = {
+            x: -vy / vm / 10,
+            y: vx / vm / 10
+        };
         const x = normalVec.x * this.state.scale;
         const y = normalVec.y * this.state.scale;
 

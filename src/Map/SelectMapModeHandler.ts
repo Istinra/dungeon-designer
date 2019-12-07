@@ -170,7 +170,7 @@ export class SelectMapModeHandler implements MapModeHandler {
     }
 
     private testDoor(door: Door): boolean {
-        return this.testLine(door.from, door.to, door.normalVec.x, door.normalVec.y);
+        return this.testWall(door.from, door.to);
     }
 
     private testLine(from: Point, to: Point, x: number, y: number): boolean {

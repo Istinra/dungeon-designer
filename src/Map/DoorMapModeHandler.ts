@@ -6,9 +6,9 @@ export class DoorMapModeHandler implements MapModeHandler {
 
     private distanceToWall: number;
 
-    private pendingDoor?: { from: Point, to: Point, normalVec: Point };
+    private pendingDoor?: { from: Point, to: Point };
 
-    public constructor(private doorCreated: { (points: { from: Point, to: Point, normalVec: Point }): void }) {
+    public constructor(private doorCreated: { (points: { from: Point, to: Point }): void }) {
     }
 
     onMapClicked(state: MapState, selected: SelectedState): void {
@@ -69,10 +69,6 @@ export class DoorMapModeHandler implements MapModeHandler {
                 to: {
                     x: t.x + doorSpanX,
                     y: t.y + doorSpanY
-                },
-                normalVec: {
-                    x: -vy / vm / 10,
-                    y: vx / vm / 10
                 }
             };
             if ((s.x === e.x || (s.x < e.x && s.x < d.from.x && e.x > d.to.x) || (s.x > d.from.x && e.x < d.to.x)) &&
@@ -89,7 +85,7 @@ export class DoorMapModeHandler implements MapModeHandler {
                 strokeColour: "yellow",
                 fillColour: "yellow"
             });
-            renderer.drawBlock(this.pendingDoor.from, this.pendingDoor.to, this.pendingDoor.normalVec);
+            renderer.drawBlock(this.pendingDoor.from, this.pendingDoor.to);
         }
     }
 }
