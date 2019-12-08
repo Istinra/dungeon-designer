@@ -26,7 +26,7 @@ interface DungeonMapStateProps {
 interface DungeonMapDispatchProps {
     roomCreated(points: Point[]): void;
 
-    doorCreated(points: { from: Point, to: Point, ratio: number }): void;
+    doorCreated(points: { room: number, wall: number, ratio: number }): void;
 
     propCreated(location: Point): void;
 
@@ -123,7 +123,9 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
                 strokeColour: door.color,
                 fillColour: door.color
             });
-            this.renderer.drawBlock(door.from, door.to, door.name);
+            const room: Room = this.props.state.map.rooms[door.room];
+            const toWall = door.wall + 1 < room.points.length ? door.wall + 1 : 0;
+            this.renderer.drawDoor(room.points[door.wall], room.points[toWall], door.ratio, door.name);
         }
     }
 
@@ -208,7 +210,7 @@ function mapStateToDispatch(dispatch: Dispatch): DungeonMapDispatchProps {
     return {
         roomCreated: (points: Point[]) =>
             dispatch({type: CREATE_ROOM_ACTION, payload: points}),
-        doorCreated: (points: { from: Point, to: Point, ratio: number }) =>
+        doorCreated: (points: { room: number, wall: number, ratio: number }) =>
             dispatch({type: CREATE_DOOR_ACTION, payload: points}),
         propCreated: (location: Point) =>
             dispatch({type: CREATE_PROP_ACTION, payload: {location: location}}),

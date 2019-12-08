@@ -72,8 +72,8 @@ export interface Wall {
 export interface Door {
     type: typeof ObjectType.DOOR,
     name: string;
-    from: Point;
-    to: Point;
+    room: number;
+    wall: number;
     ratio: number;
     color: string;
 }

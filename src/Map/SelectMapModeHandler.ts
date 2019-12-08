@@ -1,5 +1,5 @@
 import {MapModeHandler} from "./MapModeHandler";
-import {Door, MapState, ObjectType, Point, Prop, Room, SelectedState} from "../state";
+import {MapState, ObjectType, Point, Prop, Room, SelectedState} from "../state";
 import MapRenderer from "./MapRenderer";
 
 export class SelectMapModeHandler implements MapModeHandler {
@@ -71,12 +71,13 @@ export class SelectMapModeHandler implements MapModeHandler {
     }
 
     private findSelection(state: MapState): SelectedState {
-        for (let i = 0; i < state.doors.length; i++) {
-            const door = state.doors[i];
-            if (this.testDoor(door)) {
-                return {type: ObjectType.DOOR, index: i};
-            }
-        }
+        //TODO
+        // for (let i = 0; i < state.doors.length; i++) {
+        //     const door = state.doors[i];
+        //     if (this.testDoor(door)) {
+        //         return {type: ObjectType.DOOR, index: i};
+        //     }
+        // }
         for (let i = 0; i < state.props.length; i++) {
             const prop = state.props[i];
             if (this.testProp(prop)) {
@@ -169,9 +170,9 @@ export class SelectMapModeHandler implements MapModeHandler {
         return this.testLine(from, to, -vy / vm / 10, vx / vm / 10);
     }
 
-    private testDoor(door: Door): boolean {
-        return this.testWall(door.from, door.to);
-    }
+    // private testDoor(door: Door): boolean {
+    //     return this.testWall(door.from, door.to);
+    // }
 
     private testLine(from: Point, to: Point, x: number, y: number): boolean {
 

@@ -1,4 +1,4 @@
-import {MapState, Point, SelectedState} from "../state";
+import {MapState, Point, Room, SelectedState} from "../state";
 import {MapModeHandler} from "./MapModeHandler";
 import MapRenderer from "./MapRenderer";
 
@@ -6,9 +6,9 @@ export class DoorMapModeHandler implements MapModeHandler {
 
     private distanceToWall: number;
 
-    private pendingDoor?: { from: Point, to: Point, ratio: number };
+    private pendingDoor?: { room: number, wall: number, ratio: number };
 
-    public constructor(private doorCreated: { (points: { from: Point, to: Point, ratio: number }): void }) {
+    public constructor(private doorCreated: { (points: { room: number, wall: number, ratio: number }): void }) {
     }
 
     onMapClicked(state: MapState, selected: SelectedState): void {
@@ -21,15 +21,16 @@ export class DoorMapModeHandler implements MapModeHandler {
         point = {x: point.x / scale, y: point.y / scale};
         this.distanceToWall = Number.MAX_SAFE_INTEGER;
         this.pendingDoor = null;
-        for (let room of state.rooms) {
-            for (let i = 0; i < room.points.length - 1; i++) {
-                this.setIfClosest(room.points[i], room.points[i + 1], point)
+        for (let i = 0; i < state.rooms.length; i++) {
+            let room = state.rooms[i];
+            for (let j = 0; j < room.points.length - 1; j++) {
+                this.setIfClosest(room.points[j], room.points[j + 1], point, i, j);
             }
-            this.setIfClosest(room.points[room.points.length - 1], room.points[0], point)
+            this.setIfClosest(room.points[room.points.length - 1], room.points[0], point, i, room.points.length - 1);
         }
     }
 
-    private setIfClosest(s: Point, e: Point, p: Point): void {
+    private setIfClosest(s: Point, e: Point, p: Point, roomNum: number, wallNum: number): void {
 
         //The target point along the wall to place the door
         let t: Point;
@@ -63,25 +64,12 @@ export class DoorMapModeHandler implements MapModeHandler {
             const tvm = Math.sqrt(tvx * tvx + tvy * tvy);
 
             const ratio = tvm / vm;
+            const distFromStart = vm * ratio;
+            const distToEnd = vm - distFromStart;
 
-            const doorSpanX = 0.5 * vx / vm;
-            const doorSpanY = 0.5 * vy / vm;
-
-            let d = {
-                from: {
-                    x: t.x - doorSpanX,
-                    y: t.y - doorSpanY
-                },
-                to: {
-                    x: t.x + doorSpanX,
-                    y: t.y + doorSpanY
-                },
-                ratio: ratio
-            };
-            if ((s.x === e.x || (s.x < e.x && s.x < d.from.x && e.x > d.to.x) || (s.x > d.from.x && e.x < d.to.x)) &&
-                (s.y === e.y || (s.y < e.y && s.y < d.from.y && e.y > d.to.y) || (s.y > d.from.y && e.y < d.to.y))) {
+            if (distFromStart >= 0.5 && distToEnd >= 0.5) {
                 this.distanceToWall = distance;
-                this.pendingDoor = d;
+                this.pendingDoor = {room: roomNum, wall: wallNum, ratio: ratio};
             }
         }
     }
@@ -92,7 +80,9 @@ export class DoorMapModeHandler implements MapModeHandler {
                 strokeColour: "yellow",
                 fillColour: "yellow"
             });
-            renderer.drawBlock(this.pendingDoor.from, this.pendingDoor.to);
+            const room: Room = state.rooms[this.pendingDoor.room];
+            const toWall = this.pendingDoor.wall + 1 < room.points.length ? this.pendingDoor.wall + 1 : 0;
+            renderer.drawDoor(room.points[this.pendingDoor.wall], room.points[toWall], this.pendingDoor.ratio);
         }
     }
 }

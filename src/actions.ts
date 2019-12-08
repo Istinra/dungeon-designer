@@ -22,7 +22,7 @@ export interface CreateRoomAction {
 
 export interface CreateDoorAction {
     type: typeof CREATE_DOOR_ACTION;
-    payload: { from: Point, to: Point };
+    payload: { room: number, wall: number, ratio: number };
 }
 
 export interface CreatePropAction {
