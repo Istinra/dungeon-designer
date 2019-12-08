@@ -6,9 +6,9 @@ export class DoorMapModeHandler implements MapModeHandler {
 
     private distanceToWall: number;
 
-    private pendingDoor?: { from: Point, to: Point };
+    private pendingDoor?: { from: Point, to: Point, ratio: number };
 
-    public constructor(private doorCreated: { (points: { from: Point, to: Point }): void }) {
+    public constructor(private doorCreated: { (points: { from: Point, to: Point, ratio: number }): void }) {
     }
 
     onMapClicked(state: MapState, selected: SelectedState): void {
@@ -58,6 +58,12 @@ export class DoorMapModeHandler implements MapModeHandler {
 
             const vx = e.x - s.x, vy = e.y - s.y;
             const vm = Math.sqrt(vx * vx + vy * vy);
+
+            const tvx = t.x - s.x, tvy = t.y - s.y;
+            const tvm = Math.sqrt(tvx * tvx + tvy * tvy);
+
+            const ratio = tvm / vm;
+
             const doorSpanX = 0.5 * vx / vm;
             const doorSpanY = 0.5 * vy / vm;
 
@@ -69,7 +75,8 @@ export class DoorMapModeHandler implements MapModeHandler {
                 to: {
                     x: t.x + doorSpanX,
                     y: t.y + doorSpanY
-                }
+                },
+                ratio: ratio
             };
             if ((s.x === e.x || (s.x < e.x && s.x < d.from.x && e.x > d.to.x) || (s.x > d.from.x && e.x < d.to.x)) &&
                 (s.y === e.y || (s.y < e.y && s.y < d.from.y && e.y > d.to.y) || (s.y > d.from.y && e.y < d.to.y))) {

@@ -41,7 +41,8 @@ MVP Polish -
         * ~~Properties panel with split option~~
         * ~~Can hide walls~~
         * ~~Fix property panel issues with type~~  
-        * Attach Doors to segments
+    * Attach Doors to walls
+        * Doors position stored as a 0 to 1 value against a wall + width
         * Doors move with room/wall 
 * Improved props
 * Key bindings

@@ -74,6 +74,7 @@ export interface Door {
     name: string;
     from: Point;
     to: Point;
+    ratio: number;
     color: string;
 }
 

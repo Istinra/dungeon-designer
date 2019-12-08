@@ -26,7 +26,7 @@ interface DungeonMapStateProps {
 interface DungeonMapDispatchProps {
     roomCreated(points: Point[]): void;
 
-    doorCreated(points: { from: Point, to: Point }): void;
+    doorCreated(points: { from: Point, to: Point, ratio: number }): void;
 
     propCreated(location: Point): void;
 
@@ -208,7 +208,7 @@ function mapStateToDispatch(dispatch: Dispatch): DungeonMapDispatchProps {
     return {
         roomCreated: (points: Point[]) =>
             dispatch({type: CREATE_ROOM_ACTION, payload: points}),
-        doorCreated: (points: { from: Point, to: Point }) =>
+        doorCreated: (points: { from: Point, to: Point, ratio: number }) =>
             dispatch({type: CREATE_DOOR_ACTION, payload: points}),
         propCreated: (location: Point) =>
             dispatch({type: CREATE_PROP_ACTION, payload: {location: location}}),

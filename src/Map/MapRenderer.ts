@@ -81,6 +81,27 @@ export default class MapRenderer {
         this.drawLine(points[points.length - 1], endPoint);
     }
 
+    public drawDoor(wallFrom: Point, wallTo: Point, ratio: number, label?: string) {
+
+        const vx = wallTo.x - wallFrom.x, vy = wallTo.y - wallFrom.y;
+        const vm = Math.sqrt(vx * vx + vy * vy);
+
+        const doorSpanX = 0.5 * vx / vm;
+        const doorSpanY = 0.5 * vy / vm;
+
+        this.drawBlock(
+            {
+                x: wallFrom.x + vx * ratio - doorSpanX,
+                y: wallFrom.y + vy * ratio - doorSpanY,
+            },
+            {
+                x: wallFrom.x + vx * ratio + doorSpanX,
+                y: wallFrom.y + vy * ratio + doorSpanY,
+            },
+            label
+        )
+    }
+    
     public drawBlock(from: Point, to: Point, label?: string) {
 
         //TODO move to math util
