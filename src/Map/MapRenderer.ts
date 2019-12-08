@@ -53,19 +53,19 @@ export default class MapRenderer {
         this.drawPoint(to);
     }
 
-    public drawRoom(points: Point[], walls: Wall[], label?: string) {
-        for (let i = 0; i < points.length - 1; i++) {
-            if (!walls.some(w => w.open && w.pointIndex === i)) {
-                this.drawLine(points[i], points[i + 1]);
+    public drawRoom(walls: Wall[], label?: string) {
+        for (let i = 0; i < walls.length - 1; i++) {
+            if (!walls[i].open) {
+                this.drawLine(walls[i], walls[i + 1]);
             }
         }
-        if (!walls.some(w => w.open && w.pointIndex === points.length - 1)) {
-            this.drawLine(points[points.length - 1], points[0]);
+        if (!walls[walls.length - 1].open) {
+            this.drawLine(walls[walls.length - 1], walls[0]);
         }
         if (label) {
-            let textPos = points[0];
-            for (let i = 1; i < points.length; i++) {
-                const point = points[i];
+            let textPos = walls[0];
+            for (let i = 1; i < walls.length; i++) {
+                const point = walls[i];
                 if (point.y <= textPos.y && point.x <= textPos.x) {
                     textPos = point;
                 }

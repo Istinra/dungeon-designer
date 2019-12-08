@@ -23,10 +23,10 @@ export class DoorMapModeHandler implements MapModeHandler {
         this.pendingDoor = null;
         for (let i = 0; i < state.rooms.length; i++) {
             let room = state.rooms[i];
-            for (let j = 0; j < room.points.length - 1; j++) {
-                this.setIfClosest(room.points[j], room.points[j + 1], point, i, j);
+            for (let j = 0; j < room.walls.length - 1; j++) {
+                this.setIfClosest(room.walls[j], room.walls[j + 1], point, i, j);
             }
-            this.setIfClosest(room.points[room.points.length - 1], room.points[0], point, i, room.points.length - 1);
+            this.setIfClosest(room.walls[room.walls.length - 1], room.walls[0], point, i, room.walls.length - 1);
         }
     }
 
@@ -81,8 +81,8 @@ export class DoorMapModeHandler implements MapModeHandler {
                 fillColour: "yellow"
             });
             const room: Room = state.rooms[this.pendingDoor.room];
-            const toWall = this.pendingDoor.wall + 1 < room.points.length ? this.pendingDoor.wall + 1 : 0;
-            renderer.drawDoor(room.points[this.pendingDoor.wall], room.points[toWall], this.pendingDoor.ratio);
+            const toWall = this.pendingDoor.wall + 1 < room.walls.length ? this.pendingDoor.wall + 1 : 0;
+            renderer.drawDoor(room.walls[this.pendingDoor.wall], room.walls[toWall], this.pendingDoor.ratio);
         }
     }
 }

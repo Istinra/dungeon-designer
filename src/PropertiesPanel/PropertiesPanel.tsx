@@ -143,12 +143,14 @@ function mapStateToProps(state: DesignerState): PropertiesPanelProps {
                     case ObjectType.ROOM:
                         return {selected: state.map.rooms[state.selected.index], mode: state.toolMode};
                     case ObjectType.DOOR:
-                        return {selected: state.map.doors[state.selected.index], mode: state.toolMode};
+                        //TODO PLZ fix
+                        // return {selected: state.map.doors[state.selected.index], mode: state.toolMode};
+                        return {selected: undefined, mode: state.toolMode};
                     case ObjectType.PROP:
                         return {selected: state.map.props[state.selected.index], mode: state.toolMode};
                     case ObjectType.WALL:
                         return {
-                            selected: findOrCreateWall(state.map.rooms[state.selected.index], state.selected.subIndex),
+                            selected: state.map.rooms[state.selected.index].walls[state.selected.subIndex],
                             mode: state.toolMode
                         };
                 }
@@ -164,13 +166,6 @@ function mapStateToProps(state: DesignerState): PropertiesPanelProps {
     return {selected: state.map.properties, mode: state.toolMode};
 }
 
-function findOrCreateWall(room: Room, pointIndex: number): Wall {
-    const wall = room.walls.find(w => w.pointIndex === pointIndex);
-    if (wall) {
-        return wall;
-    }
-    return {pointIndex: pointIndex, open: false, type: ObjectType.WALL};
-}
 
 function mapStateToDispatch(dispatch: Dispatch): PropertiesPanelDispatch {
     return {

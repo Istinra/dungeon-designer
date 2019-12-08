@@ -36,7 +36,6 @@ export interface SelectedState {
 export interface MapState {
     properties: MapPropertiesState;
     rooms: Room[];
-    doors: Door[];
     props: Prop[];
 }
 
@@ -57,23 +56,20 @@ export interface Point {
 export interface Room {
     type: typeof ObjectType.ROOM,
     name: string;
-    points: Point[];
     walls: Wall[];
     color: string;
     wallThickness: number;
 }
 
-export interface Wall {
+export interface Wall extends Point {
     type: typeof ObjectType.WALL,
-    pointIndex: number;
     open: boolean;
+    doors: Door[];
 }
 
 export interface Door {
     type: typeof ObjectType.DOOR,
     name: string;
-    room: number;
-    wall: number;
     ratio: number;
     color: string;
 }

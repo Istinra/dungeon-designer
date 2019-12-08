@@ -17,7 +17,7 @@ export const CHANGE_ZOOM_LEVEL = "CHANGE_ZOOM_LEVEL";
 
 export interface CreateRoomAction {
     type: typeof CREATE_ROOM_ACTION;
-    payload: Point[];
+    payload: Wall[];
 }
 
 export interface CreateDoorAction {

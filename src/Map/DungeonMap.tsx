@@ -1,5 +1,5 @@
 import React, {MouseEvent} from 'react';
-import {DesignerState, ObjectType, Point, Prop, Room, SelectedState, ToolMode} from "../state";
+import {DesignerState, ObjectType, Point, Prop, Room, SelectedState, ToolMode, Wall} from "../state";
 import {connect} from 'react-redux';
 import {Dispatch} from "redux";
 import {
@@ -24,7 +24,7 @@ interface DungeonMapStateProps {
 }
 
 interface DungeonMapDispatchProps {
-    roomCreated(points: Point[]): void;
+    roomCreated(points: Wall[]): void;
 
     doorCreated(points: { room: number, wall: number, ratio: number }): void;
 
@@ -113,19 +113,23 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
                 lineWidth: room.wallThickness,
                 pointRadius: 2
             });
-            this.renderer.drawRoom(room.points, room.walls, room.name);
+            this.renderer.drawRoom(room.walls, room.name);
         }
     }
 
     private drawDoors(): void {
-        for (let door of this.props.state.map.doors) {
-            this.renderer.setState({
-                strokeColour: door.color,
-                fillColour: door.color
-            });
-            const room: Room = this.props.state.map.rooms[door.room];
-            const toWall = door.wall + 1 < room.points.length ? door.wall + 1 : 0;
-            this.renderer.drawDoor(room.points[door.wall], room.points[toWall], door.ratio, door.name);
+        for (let room of this.props.state.map.rooms) {
+            for (let i = 0; i < room.walls.length; i++) {
+                const wall = room.walls[i];
+                for (let door of wall.doors) {
+                    this.renderer.setState({
+                        strokeColour: door.color,
+                        fillColour: door.color
+                    });
+                    const toWall = i + 1 < room.walls.length ? i + 1 : 0;
+                    this.renderer.drawDoor(wall, room.walls[toWall], door.ratio, door.name);
+                }
+            }
         }
     }
 
@@ -208,8 +212,8 @@ function mapStateToProps(state: DesignerState): DungeonMapStateProps {
 
 function mapStateToDispatch(dispatch: Dispatch): DungeonMapDispatchProps {
     return {
-        roomCreated: (points: Point[]) =>
-            dispatch({type: CREATE_ROOM_ACTION, payload: points}),
+        roomCreated: (walls: Wall[]) =>
+            dispatch({type: CREATE_ROOM_ACTION, payload: walls}),
         doorCreated: (points: { room: number, wall: number, ratio: number }) =>
             dispatch({type: CREATE_DOOR_ACTION, payload: points}),
         propCreated: (location: Point) =>

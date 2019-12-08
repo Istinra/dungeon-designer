@@ -1,5 +1,5 @@
 import {MapModeHandler} from "./MapModeHandler";
-import {MapState, ObjectType, Point, Prop, Room, SelectedState} from "../state";
+import {MapState, ObjectType, Point, Prop, Room, SelectedState, Wall} from "../state";
 import MapRenderer from "./MapRenderer";
 
 export class SelectMapModeHandler implements MapModeHandler {
@@ -17,7 +17,7 @@ export class SelectMapModeHandler implements MapModeHandler {
     draw(state: MapState, selected: SelectedState, renderer: MapRenderer, scale: number): void {
         if (selected.type === ObjectType.ROOM || selected.type === ObjectType.WALL) {
             const room = state.rooms[selected.index];
-            let points = room.points;
+            let points = room.walls;
             if (this.dragStart) {
                 points = this.translatePoints(points);
             }
@@ -27,7 +27,7 @@ export class SelectMapModeHandler implements MapModeHandler {
                 lineWidth: room.wallThickness,
                 pointRadius: 5
             });
-            renderer.drawRoom(points, room.walls, room.name + " (Selected)");
+            renderer.drawRoom(points, room.name + " (Selected)");
         } else if (selected.type === ObjectType.PROP) {
             const prop = state.props[selected.index];
             let location = prop.location;
@@ -42,7 +42,7 @@ export class SelectMapModeHandler implements MapModeHandler {
         }
     }
 
-    private translatePoints(points: Point[]): Point[] {
+    private translatePoints(points: Wall[]): Wall[] {
         const transform: Point = {
             x: this.mousePoint.x - this.dragStart.x,
             y: this.mousePoint.y - this.dragStart.y
@@ -51,11 +51,13 @@ export class SelectMapModeHandler implements MapModeHandler {
             points = [...points];
             const p = points[this.dragPoint];
             points[this.dragPoint] = {
+                ...points[this.dragPoint],
                 x: Math.round(p.x + transform.x),
                 y: Math.round(p.y + transform.y)
             };
         } else {
             points = points.map(p => ({
+                    ...points[this.dragPoint],
                     x: Math.round(p.x + transform.x),
                     y: Math.round(p.y + transform.y)
                 }
@@ -88,13 +90,13 @@ export class SelectMapModeHandler implements MapModeHandler {
         // to avoid looping over rooms multiple times
         for (let i = 0; i < state.rooms.length; i++) {
             const room = state.rooms[i];
-            for (let j = 0; j < room.points.length - 1; j++) {
-                if (this.testWall(room.points[j], room.points[j + 1])) {
+            for (let j = 0; j < room.walls.length - 1; j++) {
+                if (this.testWall(room.walls[j], room.walls[j + 1])) {
                     return {type: ObjectType.WALL, index: i, subIndex: j};
                 }
             }
-            if (this.testWall(room.points[room.points.length - 1], room.points[0])) {
-                return {type: ObjectType.WALL, index: i, subIndex: room.points.length - 1};
+            if (this.testWall(room.walls[room.walls.length - 1], room.walls[0])) {
+                return {type: ObjectType.WALL, index: i, subIndex: room.walls.length - 1};
             }
         }
         for (let i = 0; i < state.rooms.length; i++) {
@@ -111,7 +113,7 @@ export class SelectMapModeHandler implements MapModeHandler {
             const room = state.rooms[selected.index];
             this.updateRoom({
                 ...room,
-                points: this.translatePoints(room.points)
+                walls: this.translatePoints(room.walls)
             });
         } else if (selected.type === ObjectType.PROP) {
             const prop = state.props[selected.index];
@@ -133,7 +135,7 @@ export class SelectMapModeHandler implements MapModeHandler {
         this.dragStart = this.mousePoint;
         if (selected.type === ObjectType.ROOM) {
             const selectedRoom = state.rooms[selected.index];
-            this.dragPoint = selectedRoom.points.findIndex(this.testPoint);
+            this.dragPoint = selectedRoom.walls.findIndex(this.testPoint);
             if (this.dragPoint !== -1) {
                 return;
             }
@@ -207,12 +209,12 @@ export class SelectMapModeHandler implements MapModeHandler {
 
     private testRoom(room: Room): boolean {
         let count = 0;
-        for (let i = 0; i < room.points.length - 1; i++) {
-            if (this.intersectsLine(room.points[i], room.points[i + 1])) {
+        for (let i = 0; i < room.walls.length - 1; i++) {
+            if (this.intersectsLine(room.walls[i], room.walls[i + 1])) {
                 count++;
             }
         }
-        if (this.intersectsLine(room.points[room.points.length - 1], room.points[0])) {
+        if (this.intersectsLine(room.walls[room.walls.length - 1], room.walls[0])) {
             count++;
         }
         return count % 2 === 1;

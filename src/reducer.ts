@@ -28,7 +28,6 @@ const initialState: DesignerState = {
             height: 20
         },
         rooms: [],
-        doors: [],
         props: []
     },
     toolMode: ToolMode.ROOM,
@@ -37,8 +36,8 @@ const initialState: DesignerState = {
         index: 0
     },
     pendingObjects: {
-        room: {points: undefined, walls: [], color: "#FF4444", name: "", type: ObjectType.ROOM, wallThickness: 2},
-        door: {room: undefined, wall: undefined, ratio: undefined, name: "", color: "#FFFF77", type: ObjectType.DOOR},
+        room: {walls: [], color: "#FF4444", name: "", type: ObjectType.ROOM, wallThickness: 2},
+        door: {ratio: undefined, name: "", color: "#FFFF77", type: ObjectType.DOOR},
         prop: {type: ObjectType.PROP, name: "", color: "#00FFFF", location: undefined}
     },
     scale: 40
@@ -50,14 +49,27 @@ export function designerReducer(state: DesignerState = initialState, action: Des
             return {
                 ...state,
                 map: {
-                    ...state.map, rooms: [...state.map.rooms, {...state.pendingObjects.room, points: action.payload}]
+                    ...state.map, rooms: [...state.map.rooms, {...state.pendingObjects.room, walls: action.payload}]
                 }
             };
         case CREATE_DOOR_ACTION:
             return {
                 ...state,
                 map: {
-                    ...state.map, doors: [...state.map.doors, {...state.pendingObjects.door, ...action.payload}]
+                    ...state.map,
+                    rooms: replaceAt(state.map.rooms, action.payload.room,
+                        {
+                            ...state.map.rooms[action.payload.room],
+                            walls: replaceAt(state.map.rooms[action.payload.room].walls, action.payload.wall,
+                                {
+                                    ...state.map.rooms[action.payload.room].walls[action.payload.wall],
+                                    doors: [...state.map.rooms[action.payload.room].walls[action.payload.wall].doors, {
+                                        ...state.pendingObjects.door,
+                                        ratio: action.payload.ratio
+                                    }]
+                                }
+                            )
+                        })
                 }
             };
         case CREATE_PROP_ACTION:
@@ -95,10 +107,11 @@ export function designerReducer(state: DesignerState = initialState, action: Des
             if (state.toolMode === ToolMode.SELECT) {
                 return {
                     ...state,
-                    map: {
-                        ...state.map,
-                        doors: replaceAt(state.map.doors, state.selected.index, action.payload)
-                    }
+                    //TODO plz fix
+                    // map: {
+                    //     ...state.map,
+                    //     doors: replaceAt(state.map.doors, state.selected.index, action.payload)
+                    // }
                 };
             } else {
                 return {
@@ -139,20 +152,21 @@ export function designerReducer(state: DesignerState = initialState, action: Des
             return splitSelectedWall(state);
         }
         case UPDATE_WALL_PROPERTIES: {
-            const room = state.map.rooms[state.selected.index];
-            const wallIndex = room.walls.findIndex(w => w.pointIndex === state.selected.subIndex);
-            return {
-                ...state,
-                map: {
-                    ...state.map,
-                    rooms: replaceAt(state.map.rooms, state.selected.index,
-                        {
-                            ...room,
-                            walls: wallIndex === -1 ? [action.payload] : replaceAt(room.walls, wallIndex, action.payload)
-                        }
-                    )
-                }
-            };
+            //TODO plz fix
+            // const room = state.map.rooms[state.selected.index];
+            // const wallIndex = room.walls.findIndex(w => w.pointIndex === state.selected.subIndex);
+            // return {
+            //     ...state,
+            //     map: {
+            //         ...state.map,
+            //         rooms: replaceAt(state.map.rooms, state.selected.index,
+            //             {
+            //                 ...room,
+            //                 walls: wallIndex === -1 ? [action.payload] : replaceAt(room.walls, wallIndex, action.payload)
+            //             }
+            //         )
+            //     }
+            // };
         }
     }
     return state;
@@ -163,8 +177,8 @@ function splitSelectedWall(state: DesignerState) {
 
     const newPointIndex = state.selected.subIndex + 1;
     //Need to account for the last point given rooms can loop
-    const from = selectedRoom.points[state.selected.subIndex],
-        to = selectedRoom.points[newPointIndex === selectedRoom.points.length ? 0 : newPointIndex];
+    const from = selectedRoom.walls[state.selected.subIndex],
+        to = selectedRoom.walls[newPointIndex === selectedRoom.walls.length ? 0 : newPointIndex];
 
     const newPoint: Point = {
         x: from.x + (to.x - from.x) / 2,
@@ -172,16 +186,16 @@ function splitSelectedWall(state: DesignerState) {
     };
 
     let newPoints: Point[];
-    if (newPointIndex === selectedRoom.points.length) {
+    if (newPointIndex === selectedRoom.walls.length) {
         newPoints = [
-            ...selectedRoom.points.slice(0, newPointIndex),
+            ...selectedRoom.walls.slice(0, newPointIndex),
             newPoint
         ];
     } else {
         newPoints = [
-            ...selectedRoom.points.slice(0, newPointIndex),
+            ...selectedRoom.walls.slice(0, newPointIndex),
             newPoint,
-            ...selectedRoom.points.slice(newPointIndex)
+            ...selectedRoom.walls.slice(newPointIndex)
         ]
     }
     return {
@@ -201,9 +215,11 @@ function deleteReducer(state: DesignerState) {
             rooms: removeAt(state.map.rooms, state.selected.index)
         }
     } else if (state.selected.type === ObjectType.DOOR) {
-        update = {
-            doors: removeAt(state.map.doors, state.selected.index)
-        }
+        return state;
+        //TODO plz fix
+        // update = {
+        //     doors: removeAt(state.map.doors, state.selected.index)
+        // }
     } else if (state.selected.type === ObjectType.PROP) {
         update = {
             props: removeAt(state.map.props, state.selected.index)

@@ -1,4 +1,4 @@
-import {MapState, Point, SelectedState} from "../state";
+import {MapState, ObjectType, Point, SelectedState, Wall} from "../state";
 import {MapModeHandler} from "./MapModeHandler";
 import MapRenderer from "./MapRenderer";
 
@@ -8,18 +8,20 @@ export class RoomMapModeHandler implements MapModeHandler {
     private activePoints: Point[] = [];
     private dragStart?: Point;
 
-    constructor(private roomCreated: (points: Point[]) => void) {
+    constructor(private roomCreated: (walls: Wall[]) => void) {
     }
 
     onMapClicked(state: MapState, selected: SelectedState): void {
         if (this.isDragging()) {
             this.roomCreated(this.getDragCorners());
-        }  else {
+        } else {
             if (this.activePoints.length !== 0 &&
                 this.activePoints[0].x === this.mouseGridPos.x &&
                 this.activePoints[0].y === this.mouseGridPos.y) {
                 if (this.activePoints.length !== 1) {
-                    this.roomCreated(this.activePoints);
+                    this.roomCreated(this.activePoints.map(p => {
+                        return {...p, open: false, doors: [], type: ObjectType.WALL};
+                    }));
                 }
                 this.activePoints = [];
             } else {
@@ -55,7 +57,7 @@ export class RoomMapModeHandler implements MapModeHandler {
                 pointRadius: 2
             });
             const dragCorners = this.getDragCorners();
-            renderer.drawRoom(dragCorners, []);
+            renderer.drawRoom(dragCorners);
         } else if (this.activePoints.length > 0) {
             renderer.setState({
                 strokeColour: "green",
@@ -71,12 +73,12 @@ export class RoomMapModeHandler implements MapModeHandler {
         return this.dragStart && this.dragStart.x !== this.mouseGridPos.x && this.dragStart.y !== this.mouseGridPos.y
     }
 
-    private getDragCorners(): Point[] {
+    private getDragCorners(): Wall[] {
         return [
-            {x: this.dragStart.x, y: this.dragStart.y},
-            {x: this.mouseGridPos.x, y: this.dragStart.y},
-            {x: this.mouseGridPos.x, y: this.mouseGridPos.y},
-            {x: this.dragStart.x, y: this.mouseGridPos.y}
+            {x: this.dragStart.x, y: this.dragStart.y, open: false, doors: [], type: ObjectType.WALL},
+            {x: this.mouseGridPos.x, y: this.dragStart.y, open: false, doors: [], type: ObjectType.WALL},
+            {x: this.mouseGridPos.x, y: this.mouseGridPos.y, open: false, doors: [], type: ObjectType.WALL},
+            {x: this.dragStart.x, y: this.mouseGridPos.y, open: false, doors: [], type: ObjectType.WALL}
         ]
     }
 }
