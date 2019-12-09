@@ -57,7 +57,7 @@ export class SelectMapModeHandler implements MapModeHandler {
             };
         } else {
             points = points.map(p => ({
-                    ...points[this.dragPoint],
+                    ...p,
                     x: Math.round(p.x + transform.x),
                     y: Math.round(p.y + transform.y)
                 }

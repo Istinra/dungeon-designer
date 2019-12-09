@@ -152,21 +152,19 @@ export function designerReducer(state: DesignerState = initialState, action: Des
             return splitSelectedWall(state);
         }
         case UPDATE_WALL_PROPERTIES: {
-            //TODO plz fix
-            // const room = state.map.rooms[state.selected.index];
-            // const wallIndex = room.walls.findIndex(w => w.pointIndex === state.selected.subIndex);
-            // return {
-            //     ...state,
-            //     map: {
-            //         ...state.map,
-            //         rooms: replaceAt(state.map.rooms, state.selected.index,
-            //             {
-            //                 ...room,
-            //                 walls: wallIndex === -1 ? [action.payload] : replaceAt(room.walls, wallIndex, action.payload)
-            //             }
-            //         )
-            //     }
-            // };
+            const room = state.map.rooms[state.selected.index];
+            return {
+                ...state,
+                map: {
+                    ...state.map,
+                    rooms: replaceAt(state.map.rooms, state.selected.index,
+                        {
+                            ...room,
+                            walls: replaceAt(room.walls, state.selected.subIndex, action.payload)
+                        }
+                    )
+                }
+            };
         }
     }
     return state;
