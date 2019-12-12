@@ -34,16 +34,17 @@
 * Visual Representation for select
 
 MVP Polish - 
-* Improved doorways / openings
-    * Can select walls separately from rooms
+* ~~Improved doorways / openings~~
+    * ~~Can select walls separately from rooms~~
         * ~~Introduce wall segments~~
         * ~~Make segments selectable~~
         * ~~Properties panel with split option~~
         * ~~Can hide walls~~
         * ~~Fix property panel issues with type~~  
-    * Attach Doors to walls
-        * Doors position stored as a 0 to 1 value against a wall + width
-        * Doors move with room/wall 
+    * ~~Attach Doors to walls~~
+        * ~~Doors position stored as a 0 to 1 value against a wall + width~~
+        * ~~Doors move with room/wall~~ 
+* Refactor reducer / duplicate maths logic
 * Improved props
 * Key bindings
 * Text and number components only update onBlur
