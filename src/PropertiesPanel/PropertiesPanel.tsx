@@ -138,19 +138,21 @@ class PropertiesPanel extends React.Component<PropertiesPanelProps & PropertiesP
 function mapStateToProps(state: DesignerState): PropertiesPanelProps {
     switch (state.toolMode) {
         case ToolMode.SELECT:
-            if (state.selected) {
-                switch (state.selected.type) {
+            const selected = state.selected;
+            if (selected) {
+                switch (selected.type) {
                     case ObjectType.ROOM:
-                        return {selected: state.map.rooms[state.selected.index], mode: state.toolMode};
+                        return {selected: state.map.rooms[selected.roomIndex], mode: state.toolMode};
                     case ObjectType.DOOR:
-                        //TODO PLZ fix
-                        // return {selected: state.map.doors[state.selected.index], mode: state.toolMode};
-                        return {selected: undefined, mode: state.toolMode};
+                        return {
+                            selected: state.map.rooms[selected.roomIndex].walls[selected.wallIndex].doors[selected.doorIndex],
+                            mode: state.toolMode
+                        };
                     case ObjectType.PROP:
-                        return {selected: state.map.props[state.selected.index], mode: state.toolMode};
+                        return {selected: state.map.props[selected.index], mode: state.toolMode};
                     case ObjectType.WALL:
                         return {
-                            selected: state.map.rooms[state.selected.index].walls[state.selected.subIndex],
+                            selected: state.map.rooms[selected.roomIndex].walls[selected.wallIndex],
                             mode: state.toolMode
                         };
                 }

@@ -104,7 +104,7 @@ class DungeonMap extends React.Component<DungeonMapStateProps & DungeonMapDispat
         for (let room of this.props.state.map.rooms) {
             if (this.props.state.toolMode === ToolMode.SELECT &&
                 this.props.state.selected && this.props.state.selected.type === ObjectType.ROOM &&
-                room === this.props.state.map.rooms[this.props.state.selected.index]) {
+                room === this.props.state.map.rooms[this.props.state.selected.roomIndex]) {
                 continue;
             }
             this.renderer.setState({

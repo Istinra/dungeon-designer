@@ -21,16 +21,39 @@ export enum ObjectType {
     WALL
 }
 
+export type SelectedState = SelectedMap | SelectedRoom | SelectedProp | SelectedWall | SelectedDoor;
+
 export interface PropertiesPanelState {
     room: Room;
     door: Door;
     prop: Prop;
 }
 
-export interface SelectedState {
-    type: ObjectType,
-    index: number,
-    subIndex?: number;
+export interface SelectedMap {
+    type: typeof ObjectType.MAP
+}
+
+export interface SelectedRoom {
+    type: typeof ObjectType.ROOM,
+    roomIndex: number
+}
+
+export interface SelectedProp {
+    type: typeof ObjectType.PROP,
+    index: number
+}
+
+export interface SelectedWall {
+    type: typeof ObjectType.WALL,
+    roomIndex: number,
+    wallIndex: number
+}
+
+export interface SelectedDoor {
+    type: typeof ObjectType.DOOR,
+    roomIndex: number,
+    wallIndex: number
+    doorIndex: number
 }
 
 export interface MapState {

@@ -1,5 +1,5 @@
 import {MapModeHandler} from "./MapModeHandler";
-import {MapState, ObjectType, Point, Prop, Room, SelectedState, Wall} from "../state";
+import {Door, MapState, ObjectType, Point, Prop, Room, SelectedState, Wall} from "../state";
 import MapRenderer from "./MapRenderer";
 
 export class SelectMapModeHandler implements MapModeHandler {
@@ -16,7 +16,7 @@ export class SelectMapModeHandler implements MapModeHandler {
 
     draw(state: MapState, selected: SelectedState, renderer: MapRenderer, scale: number): void {
         if (selected.type === ObjectType.ROOM || selected.type === ObjectType.WALL) {
-            const room = state.rooms[selected.index];
+            const room = state.rooms[selected.roomIndex];
             let points = room.walls;
             if (this.dragStart) {
                 points = this.translatePoints(points);
@@ -73,13 +73,25 @@ export class SelectMapModeHandler implements MapModeHandler {
     }
 
     private findSelection(state: MapState): SelectedState {
-        //TODO
-        // for (let i = 0; i < state.doors.length; i++) {
-        //     const door = state.doors[i];
-        //     if (this.testDoor(door)) {
-        //         return {type: ObjectType.DOOR, index: i};
-        //     }
-        // }
+
+        for (let r = 0; r < state.rooms.length; r++) {
+            const room = state.rooms[r];
+            for (let w = 0; w < room.walls.length - 1; w++) {
+                const wall = room.walls[w];
+                for (let d = 0; d < wall.doors.length; d++) {
+                    if (this.testDoor(wall, room.walls[w + 1], wall.doors[d])) {
+                        return {type: ObjectType.DOOR, roomIndex: r, wallIndex: w, doorIndex: d};
+                    }
+                }
+            }
+            const wall = room.walls[room.walls.length - 1];
+            for (let d = 0; d < wall.doors.length; d++) {
+                if (this.testDoor(wall, room.walls[0], wall.doors[d])) {
+                    return {type: ObjectType.DOOR, roomIndex: r, wallIndex: room.walls.length - 1, doorIndex: d};
+                }
+            }
+        }
+
         for (let i = 0; i < state.props.length; i++) {
             const prop = state.props[i];
             if (this.testProp(prop)) {
@@ -92,25 +104,25 @@ export class SelectMapModeHandler implements MapModeHandler {
             const room = state.rooms[i];
             for (let j = 0; j < room.walls.length - 1; j++) {
                 if (this.testWall(room.walls[j], room.walls[j + 1])) {
-                    return {type: ObjectType.WALL, index: i, subIndex: j};
+                    return {type: ObjectType.WALL, roomIndex: i, wallIndex: j};
                 }
             }
             if (this.testWall(room.walls[room.walls.length - 1], room.walls[0])) {
-                return {type: ObjectType.WALL, index: i, subIndex: room.walls.length - 1};
+                return {type: ObjectType.WALL, roomIndex: i, wallIndex: room.walls.length - 1};
             }
         }
         for (let i = 0; i < state.rooms.length; i++) {
             const room = state.rooms[i];
             if (this.testRoom(room)) {
-                return {type: ObjectType.ROOM, index: i};
+                return {type: ObjectType.ROOM, roomIndex: i};
             }
         }
-        return {type: ObjectType.MAP, index: 0};
+        return {type: ObjectType.MAP};
     }
 
     private commitDrag(selected: SelectedState, state: MapState) {
         if (selected.type === ObjectType.ROOM) {
-            const room = state.rooms[selected.index];
+            const room = state.rooms[selected.roomIndex];
             this.updateRoom({
                 ...room,
                 walls: this.translatePoints(room.walls)
@@ -134,7 +146,7 @@ export class SelectMapModeHandler implements MapModeHandler {
 
         this.dragStart = this.mousePoint;
         if (selected.type === ObjectType.ROOM) {
-            const selectedRoom = state.rooms[selected.index];
+            const selectedRoom = state.rooms[selected.roomIndex];
             this.dragPoint = selectedRoom.walls.findIndex(this.testPoint);
             if (this.dragPoint !== -1) {
                 return;
@@ -142,11 +154,24 @@ export class SelectMapModeHandler implements MapModeHandler {
         }
         const newSelection: SelectedState = this.findSelection(state);
         console.log(newSelection);
-        if (selected.type !== newSelection.type ||
-            selected.index !== newSelection.index ||
-            selected.subIndex !== newSelection.subIndex) {
+        if (SelectMapModeHandler.selectionDiffers(selected, newSelection)) {
             this.onSelection(newSelection);
         }
+    }
+
+    private static selectionDiffers(a: SelectedState, b: SelectedState) {
+        if (a === b) {
+            return false;
+        }
+        if (a.type !== b.type) {
+            return true;
+        }
+        for (let k of Object.keys(a)) {
+            if (a[k] !== b[k]) {
+                return true;
+            }
+        }
+        return true;
     }
 
     onMouseOut(): void {
@@ -172,9 +197,23 @@ export class SelectMapModeHandler implements MapModeHandler {
         return this.testLine(from, to, -vy / vm / 10, vx / vm / 10);
     }
 
-    // private testDoor(door: Door): boolean {
-    //     return this.testWall(door.from, door.to);
-    // }
+    private testDoor(wallFrom: Wall, wallTo: Wall, door: Door): boolean {
+
+        const vx = wallTo.x - wallFrom.x, vy = wallTo.y - wallFrom.y;
+        const vm = Math.sqrt(vx * vx + vy * vy);
+
+        const doorSpanX = 0.5 * vx / vm;
+        const doorSpanY = 0.5 * vy / vm;
+
+
+        return this.testWall({
+            x: wallFrom.x + vx * door.ratio - doorSpanX,
+            y: wallFrom.y + vy * door.ratio - doorSpanY,
+        }, {
+            x: wallFrom.x + vx * door.ratio + doorSpanX,
+            y: wallFrom.y + vy * door.ratio + doorSpanY,
+        });
+    }
 
     private testLine(from: Point, to: Point, x: number, y: number): boolean {
 
