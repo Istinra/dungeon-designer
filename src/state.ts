@@ -102,4 +102,5 @@ export interface Prop {
     name: string;
     location: Point;
     color: string;
+    description: string;
 }

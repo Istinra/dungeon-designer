@@ -16,7 +16,7 @@ import ImportExportComponent from "./ImportExportComponent";
 import {
     CheckboxFormComponent,
     ColorFormComponent,
-    NumberFormComponent,
+    NumberFormComponent, TextAreaFormComponent,
     TextFormComponent
 } from "../components/InputComponents";
 
@@ -125,6 +125,8 @@ class PropertiesPanel extends React.Component<PropertiesPanelProps & PropertiesP
                                value={prop.name} onChange={this.onChange}/>
             <ColorFormComponent id="prop_prop_colour" name="color" label="Color"
                                 value={prop.color} onChange={this.onChange}/>
+            <TextAreaFormComponent id="prop_prop_description" name="description" label="Description"
+                                value={prop.description} onChange={this.onChange}/>
         </section>
     }
 

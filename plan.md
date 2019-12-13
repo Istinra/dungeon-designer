@@ -44,7 +44,9 @@ MVP Polish -
     * ~~Attach Doors to walls~~
         * ~~Doors position stored as a 0 to 1 value against a wall + width~~
         * ~~Doors move with room/wall~~ 
-* Refactor reducer / duplicate maths logic
+* ~~Refactor reducer~~ 
+* Create math function for duplicate logic
+* Better support for larger maps
 * Improved props
 * Key bindings
 * Text and number components only update onBlur
@@ -79,6 +81,6 @@ UX Test Jamie
 * Door snapping to grid
 * Click to place room point + need to complete loop not obvious
 * Desired Features 
-    * Add description field for DMing
+    * ~~Add description field for DMing~~
     * Key bindings++
     * Textures
