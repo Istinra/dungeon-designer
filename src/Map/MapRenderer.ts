@@ -1,4 +1,6 @@
 import {Point, Wall} from "../state";
+import {calculateDoorFromTo, calculateNormalVector} from "./util/MathHelper";
+import {pointGenerator} from "./util/MapUtils";
 
 export default class MapRenderer {
 
@@ -54,14 +56,12 @@ export default class MapRenderer {
     }
 
     public drawRoom(walls: Wall[], label?: string) {
-        for (let i = 0; i < walls.length - 1; i++) {
-            if (!walls[i].open) {
-                this.drawLine(walls[i], walls[i + 1]);
+        for (const line of pointGenerator(walls)) {
+            if (!line.from.open) {
+                this.drawLine(line.from, line.to);
             }
         }
-        if (!walls[walls.length - 1].open) {
-            this.drawLine(walls[walls.length - 1], walls[0]);
-        }
+
         if (label) {
             let textPos = walls[0];
             for (let i = 1; i < walls.length; i++) {
@@ -82,39 +82,14 @@ export default class MapRenderer {
     }
 
     public drawDoor(wallFrom: Point, wallTo: Point, ratio: number, label?: string) {
-
-        const vx = wallTo.x - wallFrom.x, vy = wallTo.y - wallFrom.y;
-        const vm = Math.sqrt(vx * vx + vy * vy);
-
-        const doorSpanX = 0.5 * vx / vm;
-        const doorSpanY = 0.5 * vy / vm;
-
-        this.drawBlock(
-            {
-                x: wallFrom.x + vx * ratio - doorSpanX,
-                y: wallFrom.y + vy * ratio - doorSpanY,
-            },
-            {
-                x: wallFrom.x + vx * ratio + doorSpanX,
-                y: wallFrom.y + vy * ratio + doorSpanY,
-            },
-            label
-        )
+        const door = calculateDoorFromTo(wallFrom, wallTo, ratio);
+        this.drawBlock(door.from, door.to, label);
     }
-    
+
     public drawBlock(from: Point, to: Point, label?: string) {
 
-        //TODO move to math util
-        const vx = to.x - from.x, vy = to.y - from.y;
-        let vm = Math.sqrt(vx * vx + vy * vy);
-        if (vm === 0) {
-            vm = 1;
-        }
+        const normalVec = calculateNormalVector(from, to);
 
-        const normalVec = {
-            x: -vy / vm / 10,
-            y: vx / vm / 10
-        };
         const x = normalVec.x * this.state.scale;
         const y = normalVec.y * this.state.scale;
 

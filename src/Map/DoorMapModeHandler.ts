@@ -1,6 +1,7 @@
 import {MapState, Point, Room, SelectedState} from "../state";
 import {MapModeHandler} from "./MapModeHandler";
 import MapRenderer from "./MapRenderer";
+import {pointGenerator} from "./util/MapUtils";
 
 export class DoorMapModeHandler implements MapModeHandler {
 
@@ -21,12 +22,11 @@ export class DoorMapModeHandler implements MapModeHandler {
         point = {x: point.x / scale, y: point.y / scale};
         this.distanceToWall = Number.MAX_SAFE_INTEGER;
         this.pendingDoor = null;
-        for (let i = 0; i < state.rooms.length; i++) {
-            let room = state.rooms[i];
-            for (let j = 0; j < room.walls.length - 1; j++) {
-                this.setIfClosest(room.walls[j], room.walls[j + 1], point, i, j);
+        for (let doorIndex = 0; doorIndex < state.rooms.length; doorIndex++) {
+            let room = state.rooms[doorIndex];
+            for (let line of pointGenerator(room.walls)) {
+                this.setIfClosest(line.from, line.to, point, doorIndex, line.index);
             }
-            this.setIfClosest(room.walls[room.walls.length - 1], room.walls[0], point, i, room.walls.length - 1);
         }
     }
 

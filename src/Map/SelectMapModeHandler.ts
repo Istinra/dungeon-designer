@@ -1,6 +1,8 @@
 import {MapModeHandler} from "./MapModeHandler";
 import {Door, MapState, ObjectType, Point, Prop, Room, SelectedState, Wall} from "../state";
 import MapRenderer from "./MapRenderer";
+import {calculateDoorFromTo, calculateNormalVector} from "./util/MathHelper";
+import {pointGenerator} from "./util/MapUtils";
 
 export class SelectMapModeHandler implements MapModeHandler {
 
@@ -76,18 +78,11 @@ export class SelectMapModeHandler implements MapModeHandler {
 
         for (let r = 0; r < state.rooms.length; r++) {
             const room = state.rooms[r];
-            for (let w = 0; w < room.walls.length - 1; w++) {
-                const wall = room.walls[w];
-                for (let d = 0; d < wall.doors.length; d++) {
-                    if (this.testDoor(wall, room.walls[w + 1], wall.doors[d])) {
-                        return {type: ObjectType.DOOR, roomIndex: r, wallIndex: w, doorIndex: d};
+            for (let line of pointGenerator(room.walls)) {
+                for (let d = 0; d < line.from.doors.length; d++) {
+                    if (this.testDoor(line.from, line.to, line.from.doors[d])) {
+                        return {type: ObjectType.DOOR, roomIndex: r, wallIndex: line.index, doorIndex: d};
                     }
-                }
-            }
-            const wall = room.walls[room.walls.length - 1];
-            for (let d = 0; d < wall.doors.length; d++) {
-                if (this.testDoor(wall, room.walls[0], wall.doors[d])) {
-                    return {type: ObjectType.DOOR, roomIndex: r, wallIndex: room.walls.length - 1, doorIndex: d};
                 }
             }
         }
@@ -102,13 +97,10 @@ export class SelectMapModeHandler implements MapModeHandler {
         // to avoid looping over rooms multiple times
         for (let i = 0; i < state.rooms.length; i++) {
             const room = state.rooms[i];
-            for (let j = 0; j < room.walls.length - 1; j++) {
-                if (this.testWall(room.walls[j], room.walls[j + 1])) {
-                    return {type: ObjectType.WALL, roomIndex: i, wallIndex: j};
+            for (let line of pointGenerator(room.walls)) {
+                if (this.testWall(line.from, line.to)) {
+                    return {type: ObjectType.WALL, roomIndex: i, wallIndex: line.index};
                 }
-            }
-            if (this.testWall(room.walls[room.walls.length - 1], room.walls[0])) {
-                return {type: ObjectType.WALL, roomIndex: i, wallIndex: room.walls.length - 1};
             }
         }
         for (let i = 0; i < state.rooms.length; i++) {
@@ -187,32 +179,13 @@ export class SelectMapModeHandler implements MapModeHandler {
     };
 
     private testWall(from: Point, to: Point): boolean {
-
-        const vx = to.x - from.x, vy = to.y - from.y;
-        let vm = Math.sqrt(vx * vx + vy * vy);
-        if (vm === 0) {
-            vm = 1;
-        }
-
-        return this.testLine(from, to, -vy / vm / 10, vx / vm / 10);
+        const normalVec = calculateNormalVector(from, to);
+        return this.testLine(from, to, normalVec.x, normalVec.y);
     }
 
     private testDoor(wallFrom: Wall, wallTo: Wall, door: Door): boolean {
-
-        const vx = wallTo.x - wallFrom.x, vy = wallTo.y - wallFrom.y;
-        const vm = Math.sqrt(vx * vx + vy * vy);
-
-        const doorSpanX = 0.5 * vx / vm;
-        const doorSpanY = 0.5 * vy / vm;
-
-
-        return this.testWall({
-            x: wallFrom.x + vx * door.ratio - doorSpanX,
-            y: wallFrom.y + vy * door.ratio - doorSpanY,
-        }, {
-            x: wallFrom.x + vx * door.ratio + doorSpanX,
-            y: wallFrom.y + vy * door.ratio + doorSpanY,
-        });
+        const doorFromTo = calculateDoorFromTo(wallFrom, wallTo, door.ratio);
+        return this.testWall(doorFromTo.from, doorFromTo.to);
     }
 
     private testLine(from: Point, to: Point, x: number, y: number): boolean {
@@ -248,13 +221,10 @@ export class SelectMapModeHandler implements MapModeHandler {
 
     private testRoom(room: Room): boolean {
         let count = 0;
-        for (let i = 0; i < room.walls.length - 1; i++) {
-            if (this.intersectsLine(room.walls[i], room.walls[i + 1])) {
+        for (let line of pointGenerator(room.walls)) {
+            if (this.intersectsLine(line.from, line.to)) {
                 count++;
             }
-        }
-        if (this.intersectsLine(room.walls[room.walls.length - 1], room.walls[0])) {
-            count++;
         }
         return count % 2 === 1;
     }
