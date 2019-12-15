@@ -45,7 +45,7 @@ MVP Polish -
         * ~~Doors position stored as a 0 to 1 value against a wall + width~~
         * ~~Doors move with room/wall~~ 
 * ~~Refactor reducer~~ 
-* Create math function for duplicate logic
+* ~~Create math function for duplicate logic~~
 * Better support for larger maps
 * Improved props
 * Key bindings
